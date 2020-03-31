@@ -1,0 +1,21 @@
+{
+	"view": {
+		"activities": "ACTIVITIES",
+		"address": "address",
+		"basicinfo": "BASIC INFORMATION",
+		"birthday": "birthday",
+		"contactinfo": "CONTACT INFORMATION",
+		"edit": "Edit Profile",
+		"about": "About",
+		"photos": "Photos",
+		"email": "email",
+		"gender": "gender",
+		"myhobbies": "My Hobbies",
+		"myinterests": "My Interests",
+		"myposts": "My Posts",
+		"mywork": "My Work",
+		"phone": "phone",
+		"preflang": "preferred language",
+		"update": "update image"
+	}
+}

@@ -1,0 +1,12 @@
+{
+	"forget": "<0>忘记密码？</0>",
+	"login": "<0>登录</0>",
+	"password": "<0>密码</0>",
+	"placeholder": {
+		"password": "输入密码",
+		"username": "输入用户名/电子邮件"
+	},
+	"register": "<0>寄存器</0>",
+	"title": "<0>登录</0>",
+	"username": "<0>用户名</0>"
+}

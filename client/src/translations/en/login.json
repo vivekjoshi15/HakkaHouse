@@ -1,0 +1,12 @@
+{
+	"forget": "<0>forget password?</0>",
+	"login": "<0>Login</0>",
+	"password": "<0>password</0>",
+	"placeholder": {
+		"password": "enter password",
+		"username": "enter username/email"
+	},
+	"register": "<0>Register</0>",
+	"title": "<0>Login</0>",
+	"username": "<0>username</0>"
+}

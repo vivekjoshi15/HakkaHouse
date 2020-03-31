@@ -1,0 +1,21 @@
+{
+	"view": {
+		"activities": "活动",
+		"address": "地址",
+		"basicinfo": "基本信息",
+		"birthday": "生日",
+		"contactinfo": "联系信息",
+		"edit": "编辑个人资料",
+		"about": "關於",
+		"photos": "相片",
+		"email": "电子邮件",
+		"gender": "性别",
+		"myhobbies": "我的爱好",
+		"myinterests": "我的兴趣",
+		"myposts": "我的帖子",
+		"mywork": "我的工作",
+		"phone": "电话",
+		"preflang": "首选语言",
+		"update": "更新图片"
+	}
+}

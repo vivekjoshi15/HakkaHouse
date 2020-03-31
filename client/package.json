@@ -1,0 +1,57 @@
+{
+  "name": "Hakka-House-Client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "bootstrap": "^4.4.1",
+    "filepond": "^4.13.0",
+    "filepond-plugin-image-exif-orientation": "^1.0.6",
+    "filepond-plugin-image-preview": "^4.6.1",
+    "i18next": "^19.3.4",
+    "i18next-browser-languagedetector": "^4.0.2",
+    "i18next-xhr-backend": "^3.2.2",
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.0.0",
+    "react-cookie": "^4.0.3",
+    "react-datepicker": "^2.14.1",
+    "react-dom": "^16.13.1",
+    "react-filepond": "^7.0.1",
+    "react-headroom": "^3.0.0",
+    "react-i18next": "^11.3.4",
+    "react-icons": "^3.9.0",
+    "react-loader-spinner": "^3.1.5",
+    "react-moment": "^0.9.7",
+    "react-promise-tracker": "^2.1.0",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.3.0",
+    "react-select": "^3.1.0",
+    "react-slideshow-image": "^1.4.0",
+    "redux": "^4.0.5",
+    "redux-form": "^8.3.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

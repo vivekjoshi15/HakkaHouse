@@ -1,0 +1,203 @@
+.headroom-wrapper {  
+  width: 100%;
+}
+
+.headroom--scrolled header{
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+}
+
+.slide-container {
+  width: 60%;
+  margin: auto; }
+
+.each-slide > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 100px;
+}
+
+.each-slide span {
+  padding: 20px;
+  font-size: 20px;
+  background: #efefef;
+  text-align: center;
+}
+
+.each-fade {
+  display: flex;
+}
+
+.each-fade .image-container {
+  width: 75%;
+  overflow: hidden;
+}
+
+.each-fade .image-container img {
+  width: 100%;
+}
+
+#topCityState {
+  width: 100%;
+  color: #b90900;
+  font-size: 10px;
+  font-weight: 700;
+  display: table;
+  margin-top: -6px;
+}
+
+#topCityState a.left{
+  text-align: left;
+  display: table-cell;
+  color: #666;
+}
+
+#topCityState span.center{
+  text-align: left;
+  display: none;
+  margin: 0 auto;
+  color: #b90900;
+  cursor: pointer;
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+#topCityState:hover span.center{
+  display: table-row;
+}
+
+#topCityState a.right{
+  text-align: right;
+  display: table-cell;
+  color: #666;
+}
+
+.modelCityWrap{
+  display: block;
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+}
+
+.modelCityBack{
+  display: block;
+  position: relative;
+  background-color: #000;
+  opacity: 0.7;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left:0;
+}
+
+.modelCity{
+  padding: 20px 20px 40px;
+  display: block;
+  position: absolute;
+  height: 140px;
+  width: 560px;
+  top: 40%;
+  left:40%;
+  top: calc(40% - 70px);
+  left: calc(50% - 280px);
+  background-color: #fff;
+  z-index: 999999;
+  border-color: #b90900;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+}
+
+.modelPost{
+  padding: 20px 20px 40px;
+  display: block;
+  position: absolute;
+  height: 400px;
+  width: 560px;
+  top: 40%;
+  left:40%;
+  top: calc(40% - 200px);
+  left: calc(50% - 280px);
+  background-color: #fff;
+  z-index: 999999;
+  border-color: #b90900;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+}
+
+.modelCity h2,
+#contentDashboard .modelPost h2{
+  text-align: center;
+  color: #b90900;
+  margin: 0 0 15px;
+  font-size: 19px;
+  padding-bottom: 0;
+  text-transform: capitalize;
+  border: 0px none;
+}
+
+.modelCity .right{
+  text-align: right;
+}
+
+.modelCity .right span{
+  cursor:pointer;
+}
+
+#createPost {
+  display: block;
+  margin: 10px auto;
+  padding: 5px 0;
+  border: 1px solid #999;
+  height: 33px;
+  text-align: center;
+  cursor: pointer;
+  color: #fff;
+  background-color: #333;
+  clear: both;
+}
+
+#contentDashboard .modelPost button{    
+  display: inline-block;
+  border: 0;
+  margin: 0px 0px 5px;
+  padding: 8px 0px;
+  width: 100%;
+  text-align: center;
+  border-radius: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: #b90900;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,.28);
+}
+
+#contentDashboard .modelPost textarea {    
+  display: block;
+  width: 100%;
+  height: 255px;
+  margin-bottom: 15px;
+  padding: 5px 12px;
+  border: 1px solid #999;
+}
+
+#contentDashboard .modelPost .close,
+.modelCity .close{
+  display: block;
+  position: absolute;
+  top: -10px;
+  right: 5px;
+  font-size: 11px;
+  font-weight: normal;
+  cursor: pointer;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  width: 20px;
+  border-radius: 20px;
+  color: #fff;
+  background-color: #b90900;
+  opacity: 1;
+}

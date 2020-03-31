@@ -1,0 +1,35 @@
+{
+	"main": {
+		"back": "<0>返回</0>",
+		"city": "<0>市</0>",
+		"country": "<0>国家</0>",
+		"cpassword": "<0>确认密码</0>",
+		"email": "<0>电子邮件</0>",
+		"firstname": "<0>名字</0>",
+		"lastname": "<0>姓</0>",
+		"password": "<0>密码</0>",
+		"phonecode": "<0>电话</0>",
+		"phone": "<0>电话</0>",
+		"preflang": "<0>首选语言</0>",
+		"register": "<0>寄存器</0>",
+		"state": "<0>州</0>",
+		"title": "<0>创建一个新帐户</0>",
+		"username": "<0>用户名</0>",
+		"update": "<0>更新配置文件</0>",
+		"cancel": "<0>取消</0>"
+	},
+	"placeholder": {
+		"city": "市",
+		"country": "选择国家",
+		"cpassword": "确认密码",
+		"email": "电子邮件",
+		"firstname": "名字",
+		"lastname": "姓",
+		"password": "密码",
+		"phonecode": "电话",
+		"phone": "电话",
+		"preflang": "选择您喜欢的语言",
+		"state": "州",
+		"username": "用户名"
+	}
+}

@@ -1,0 +1,24 @@
+{
+	"buy": "Buy Book",
+	"changelang": "change language:",
+	"connect": "<0><0>Connect</0></0>",
+	"cooking": "<0><0>Cooking</0></0>",
+	"copyright": "© 2020 Hakka.House",
+	"eat": "<0><0>Eat/Entertain</0></0>",
+	"hui": "<0><0>Hui</0></0>",
+	"learn": "<0><0>Learn</0></0>",
+	"links": {
+		"about": "ABOUT HAKKA.HOUSE INTL.",
+		"business": "HAKKA.HOUSE BUSINESS PLAN",
+		"crowd": "HAKKA.HOUSE HUI CROWD OFFERING",
+		"donate": "PARTICIPATE/DONATE",
+		"publications": "PUBLICATIONS"
+	},
+	"login": "Login",
+	"logout": "Logout",
+	"places": "<0><0>Places</0></0>",
+	"search": "search...",
+	"share": "<0><0>Share</0></0>",
+	"shop": "<0><0>Shop</0></0>",
+	"spiritual": "<0><0>Spirtual</0></0>"
+}
