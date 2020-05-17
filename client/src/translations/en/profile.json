@@ -8,6 +8,12 @@
 		"edit": "Edit Profile",
 		"about": "About",
 		"photos": "Photos",
+		"messages": "Messages",
+		"like": "Like",
+		"liked": "Liked",
+		"share": "Share",
+		"comment": "Comment",
+		"comments": "Comments",
 		"email": "email",
 		"gender": "gender",
 		"myhobbies": "My Hobbies",
@@ -16,6 +22,15 @@
 		"mywork": "My Work",
 		"phone": "phone",
 		"preflang": "preferred language",
-		"update": "update image"
+		"update": "update image",
+		"createpost": "Create Post",
+		"editpost": "Edit Post",
+		"deletepost": "Delete Post",
+		"hidepost": "Hide Post",
+		"privatepost": "Make Private",
+		"publicpost": "Make Public",
+		"posts": "Posts",
+		"editmessage": "Edit Message",
+		"deletemessage": "Delete Message"
 	}
 }

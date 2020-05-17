@@ -15,8 +15,9 @@ class profileView extends Component {
     super(props);
     this.state = {
       isOwner:false,
-      userid: 0, 
-      roleid: 1, 
+      id: 0, 
+      user_id: 0, 
+      role_id: 1, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -60,7 +61,8 @@ class profileView extends Component {
           if(result != null && result.user != null) {
             const birthday=(result.user.birthday)?result.user.birthday.toString().split('T')[0]: result.user.birthday;
 
-            this.setState({ userid: result.user.userid });
+            this.setState({ id: result.user.id });
+            this.setState({ user_id: result.user.id });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ email: result.user.email });
@@ -78,7 +80,7 @@ class profileView extends Component {
             this.setState({ gender: result.user.gender });
             this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });                    
 
-            if(user != null && result.user.userid === user.userid){
+            if(user != null && result.user.id === user.id){
               this.setState({ isOwner: true});
             }
           }

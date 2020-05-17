@@ -11,7 +11,7 @@ const { to, ReE, ReS } = require('../services/util.service');
 const getAllUsers = async function (req, res) {
     let user, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, user] = await to(model.tb_user.findAll());
+    [err, user] = await to(model.user.findAll());
     if (err) {
         return ReE(res, err, 422);
     }
@@ -21,7 +21,7 @@ const getAllUsers = async function (req, res) {
 const getById = async function (req, res) {
     const body = req.params;
     let err, user;
-    [err, user] = await to(model.tb_user.findOne({ where: { userid: body.userid, isactive : 1 } }));
+    [err, user] = await to(model.user.findOne({ where: { id: body.id, isactive : 1 } }));
     if (err) return ReE(res, err, 422);
     return ReS(res, { user: user });
 }
@@ -29,7 +29,7 @@ const getById = async function (req, res) {
 const getByUsername = async function (req, res) {
     const body = req.params;
     let err, user;
-    [err, user] = await to(model.tb_user.findOne({ where: { username: body.username, isactive : 1 } }));
+    [err, user] = await to(model.user.findOne({ where: { username: body.username, isactive : 1 } }));
     if (err) return ReE(res, err, 422);
     return ReS(res, { user: user });
 }
@@ -38,9 +38,9 @@ const update = async function (req, res) {
     let user;
     if(req.body.password =='')
     {
-        [err, user] = await to(model.tb_user.update(
+        [err, user] = await to(model.user.update(
         {
-            roleid: req.body.roleid,
+            role_id: req.body.role_id,
             email: req.body.email,
             firstname: req.body.firstname,
             lastname: req.body.lastname,
@@ -57,7 +57,7 @@ const update = async function (req, res) {
             birthday: req.body.birthday,
             isactive: req.body.isactive,
         },
-        { where: { userid: req.params.userid } }));
+        { where: { id: req.params.id } }));
 
         if (err) {
             ReE(res,'error ' + err.message);
@@ -74,9 +74,9 @@ const update = async function (req, res) {
 
         password = hash;
 
-        [err, user] = await to(model.tb_user.update(
+        [err, user] = await to(model.user.update(
         {
-            roleid: req.body.roleid,
+            role_id: req.body.role_id,
             email: req.body.email,
             firstname: req.body.firstname,
             lastname: req.body.lastname,
@@ -93,7 +93,7 @@ const update = async function (req, res) {
             birthday: req.body.birthday,
             isactive: req.body.isactive,
         },
-        { where: { userid: req.params.userid } }));
+        { where: { id: req.params.id } }));
 
         if (err) {
             ReE(res,'error ' + err.message);
@@ -156,11 +156,11 @@ const uploadImage = async function (req, res) {
         //Updating User table for profile image       
         let err, user; 
         url = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-        [err, user] = await to(model.tb_user.update(
+        [err, user] = await to(model.user.update(
         {
             profileimage: url,
         },
-        { where: { userid: req.body.userid } }));
+        { where: { id: req.body.id } }));
 
         if (err) {
             ReE(res,'error ' + err.message);
@@ -181,10 +181,10 @@ const get = async function (req, res) {
 }
 
 const remove = async function (req, res) {
-    let userid = req.params.userId;
-    model.tb_user.destroy({
+    let id = req.params.id;
+    model.user.destroy({
         where: {
-            userid: userid //this will be your id that you want to delete
+            id: id //this will be your id that you want to delete
         }
     }).then(function (rowDeleted) { // rowDeleted will return number of rows deleted
         if (rowDeleted === 1) {
@@ -234,22 +234,22 @@ const getUsersByCSC = async function (req, res) {
     const body = req.params;
     let err, user;
     if(body.city && body.city != 0){
-        [err, user] = await to(model.tb_user.findAll({ where: { city: body.city, isactive : 1 }, attributes: ['userid', 'username', 'firstname', 'lastname', 'profileimage'] }));
+        [err, user] = await to(model.user.findAll({ where: { city: body.city, isactive : 1 }, attributes: ['id', 'username', 'firstname', 'lastname', 'profileimage'] }));
         if (err) return ReE(res, err, 422);
         return ReS(res, { user: user });
     }
     else if(body.state && body.state != 0){
-        [err, user] = await to(model.tb_user.findAll({ where: { state: body.state, isactive : 1 }, attributes: ['userid', 'username', 'firstname', 'lastname', 'profileimage'] }));
+        [err, user] = await to(model.user.findAll({ where: { state: body.state, isactive : 1 }, attributes: ['id', 'username', 'firstname', 'lastname', 'profileimage'] }));
         if (err) return ReE(res, err, 422);
         return ReS(res, { user: user });
     }
     else if(body.country && body.country != 0){
-        [err, user] = await to(model.tb_user.findAll({ where: { country: body.country, isactive : 1 }, attributes: ['userid', 'username', 'firstname', 'lastname', 'profileimage'] }));
+        [err, user] = await to(model.user.findAll({ where: { country: body.country, isactive : 1 }, attributes: ['id', 'username', 'firstname', 'lastname', 'profileimage'] }));
         if (err) return ReE(res, err, 422);
         return ReS(res, { user: user });
     }
     else {
-        [err, user] = await to(model.tb_user.findAll({ where: { isactive : 1 }, attributes: ['userid', 'username', 'firstname', 'lastname', 'profileimage'] }));
+        [err, user] = await to(model.user.findAll({ where: { isactive : 1 }, attributes: ['id', 'username', 'firstname', 'lastname', 'profileimage'] }));
         if (err) return ReE(res, err, 422);
         return ReS(res, { user: user });
     }

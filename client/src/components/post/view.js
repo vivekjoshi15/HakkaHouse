@@ -11,8 +11,8 @@ class postView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userid: 0, 
-      roleid: 1, 
+      user_id: 0, 
+      role_id: 1, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -47,9 +47,9 @@ class postView extends Component {
     let user = JSON.parse(localStorage.getItem('user'));
 
     trackPromise(
-      userService.getById(CONSTANTS.GET_USER_URL+'/'+user.userid)
+      userService.getById(CONSTANTS.GET_USER_URL+'/'+user.id)
         .then((result) => {
-            this.setState({ userid: result.user.userid });
+            this.setState({ user_id: result.user.id });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ email: result.user.email });
@@ -78,7 +78,7 @@ class postView extends Component {
               <div class="row">
                 <div class="col">
                   <img src="./blank-profile.jpg"  alt="" class="profileimage" />
-                  <div class="title">(<Link to={'/profile/image/'+this.state.userid}><Trans i18nKey='profile:view.update'>update image</Trans></Link>)</div>
+                  <div class="title">(<Link to={'/profile/image/'+this.state.user_id}><Trans i18nKey='profile:view.update'>update image</Trans></Link>)</div>
                 </div>
               </div>
               <div class="row">
@@ -93,17 +93,17 @@ class postView extends Component {
               </div>              
               <div class="row">
                 <div class="col">                  
-                  <div><Link to={'/post/'+this.state.userid}><Trans i18nKey='profile:view..myposts'>My Posts</Trans></Link></div>
-                  <div><Link to={'/hobbies/'+this.state.userid}><Trans i18nKey='profile:view.myhobbies'>My Hobbies</Trans></Link></div>
-                  <div><Link to={'/work/'+this.state.userid}><Trans i18nKey='profile:view.mywork'>My Work</Trans></Link></div>
-                  <div><Link to={'/interests/'+this.state.userid}><Trans i18nKey='profile:view.interests'>My Interests</Trans></Link></div>
+                  <div><Link to={'/post/'+this.state.user_id}><Trans i18nKey='profile:view..myposts'>My Posts</Trans></Link></div>
+                  <div><Link to={'/hobbies/'+this.state.user_id}><Trans i18nKey='profile:view.myhobbies'>My Hobbies</Trans></Link></div>
+                  <div><Link to={'/work/'+this.state.user_id}><Trans i18nKey='profile:view.mywork'>My Work</Trans></Link></div>
+                  <div><Link to={'/interests/'+this.state.user_id}><Trans i18nKey='profile:view.interests'>My Interests</Trans></Link></div>
                 </div>
               </div>
             </div>
             <div class="col-9">
               <div class="row">
                 <div class="col">
-                  <h2>{this.state.firstname} {this.state.lastname} (<Link to={'/profile/edit/'+this.state.userid}><Trans i18nKey='profile:view.edit'>edit profile</Trans></Link>)</h2>
+                  <h2>{this.state.firstname} {this.state.lastname} (<Link to={'/profile/edit/'+this.state.user_id}><Trans i18nKey='profile:view.edit'>edit profile</Trans></Link>)</h2>
                 </div>
               </div> 
               <div class="row">

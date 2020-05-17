@@ -115,12 +115,12 @@
   padding: 20px 20px 40px;
   display: block;
   position: absolute;
+  width: 800px;
   height: 400px;
-  width: 560px;
   top: 40%;
   left:40%;
   top: calc(40% - 200px);
-  left: calc(50% - 280px);
+  left: calc(50% - 400px);
   background-color: #fff;
   z-index: 999999;
   border-color: #b90900;
@@ -147,16 +147,14 @@
 }
 
 #createPost {
-  display: block;
+  display: inline-block;
   margin: 10px auto;
-  padding: 5px 0;
+  padding: 3px 15px;
   border: 1px solid #999;
-  height: 33px;
   text-align: center;
   cursor: pointer;
   color: #fff;
-  background-color: #333;
-  clear: both;
+  background-color: #666;
 }
 
 #contentDashboard .modelPost button{    

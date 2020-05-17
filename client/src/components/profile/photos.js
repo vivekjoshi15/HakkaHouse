@@ -17,7 +17,8 @@ class profilePhotos extends Component {
     this.state = {
       message:'',  
       isOwner:false,
-      userid: 0, 
+      user_id: 0, 
+      id: 0, 
       firstname: '', 
       lastname: '', 
       username: '', 
@@ -41,13 +42,13 @@ class profilePhotos extends Component {
       userService.getByUsername(CONSTANTS.GET_USERNAME_URL+'/'+this.props.match.params.username)
         .then((result) => {     
           if(result != null && result.user != null) {
-            this.setState({ userid: result.user.userid });
+            this.setState({ user_id: result.user.id });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ username: result.user.username });
             this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });  
 
-            if(user != null && result.user.userid === user.userid){
+            if(user != null && result.user.id === user.id){
               this.setState({ isOwner: true});
             }                  
           }

@@ -17,8 +17,9 @@ class profileEdit extends Component {
     super(props);
     this.state = {
       isOwner:false,
-      userid: 0, 
-      roleid: 1, 
+      id: 0, 
+      user_id: 0, 
+      role_id: 1, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -65,12 +66,13 @@ class profileEdit extends Component {
     this.setState({ user: user });
 
     trackPromise(
-      userService.getById(CONSTANTS.GET_USER_URL+'/'+this.props.match.params.userId)
+      userService.getById(CONSTANTS.GET_USER_URL+'/'+this.props.match.params.id)
         .then((result) => {
           if(result != null && result.user != null) {
-            this.setState({ userid: result.user.userid });
+            this.setState({ id: result.user.id });
+            this.setState({ user_id: result.user.id });
 
-            if(user != null && result.user.userid !== user.userid){
+            if(user != null && result.user.id !== user.id){
               this.props.history.push('/404?message=not authroized to view this page');
             }
 
@@ -93,7 +95,7 @@ class profileEdit extends Component {
             this.setState({ gender: result.user.gender });
             this.setState({ profileimage: result.user.profileimage }); 
 
-            if(user != null && result.user.userid === user.userid){
+            if(user != null && result.user.id === user.id){
               this.setState({ isOwner: true});
             }
 
@@ -208,7 +210,7 @@ class profileEdit extends Component {
     }
 
     trackPromise(
-      fetch(CONSTANTS.UPDATE_URI + '/' + this.state.user.userid, {
+      fetch(CONSTANTS.UPDATE_URI + '/' + this.state.user.id, {
         method: 'PUT',
         body: JSON.stringify(this.state),
         headers: authHeader()

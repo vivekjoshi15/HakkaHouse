@@ -14,7 +14,7 @@ import { IoMdThumbsUp, IoIosChatboxes, IoIosShareAlt } from "react-icons/io";
 
 import '../dashboard/index.css';
 
-class postsView extends Component {
+class postSingle extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,8 +34,6 @@ class postsView extends Component {
       selItem:{}
     };
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.handlePostModel = this.handlePostModel.bind(this);
-    this.handlePost = this.handlePost.bind(this);
     this.editPost = this.editPost.bind(this);
     this.deletePost = this.deletePost.bind(this);
     this.hidePost = this.hidePost.bind(this);
@@ -48,38 +46,6 @@ class postsView extends Component {
   }
 
   componentDidMount() {
-    //this.props.setBannerText(this.props.match.params.city + ' Dashboard');   
-    this.props.setBannerText(' '); 
-    this.getUser();
-  }
-
-  getUser = () => {
-    let user = JSON.parse(localStorage.getItem('user')) || {};
-    this.setState({ user: user });
-
-    trackPromise(
-      userService.getByUsername(CONSTANTS.GET_USERNAME_URL+'/'+this.props.match.params.username)
-        .then((result) => {     
-          if(result != null && result.user != null) {
-            this.setState({ id: result.user.id });
-            this.setState({ user_id: result.user.id });
-            this.setState({ firstname: result.user.firstname });
-            this.setState({ lastname: result.user.lastname });
-            this.setState({ username: result.user.username });
-            this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });  
-
-            if(user != null && result.user.id === user.id){
-              this.setState({ isOwner: true});
-            }    
-
-            this.getAllUserPosts(result.user.id);              
-          }
-          else
-          {            
-            this.props.history.push('/404');
-          } 
-        })
-    );
   }
 
   getAllUserPosts = (user_id) => {
@@ -124,79 +90,6 @@ class postsView extends Component {
     this.setState({
       [name]: value
     });
-  }
-
-  handlePostModel = () => { 
-    this.setState({ showModel: !this.state.showModel });    
-    this.setState({ id: 0 });
-  }
-
-  handlePost = (e) => { 
-    this.setState({message: ''});
-
-    if (!this.state.postMessage.length) {
-      return;
-    }
-
-    if(this.state.id === 0){
-
-      const request={
-        userId: this.state.user_id,
-        message: this.state.postMessage,
-        isprivate: 0,
-        isactive: 1,
-      }
-
-      trackPromise(
-        fetch(CONSTANTS.CREATE_POST_URI, {
-          method: 'POST',
-          body: JSON.stringify(request),
-          headers: authHeader()
-        })
-        .then(res => res.json())
-        .then(
-          (result) => {
-            if (result.success === true) {        
-              this.setState({message: 'Your Post Inserted!!!'});
-              this.setState({ showModel: !this.state.showModel });
-              this.setState({ id: 0 });
-              this.getAllUserPosts(this.state.user_id);  
-            } else {
-              this.setState({message: result.error});
-            }
-          },
-          (error) => {
-            this.setState({message: error});
-          })    
-        .catch(err => {
-          console.error(err);
-          this.setState({message: 'Error logging in please try again'+ err});
-        })
-      )
-    }
-    else
-    {
-      const request={
-        message: this.state.postMessage
-      }
-
-      trackPromise(
-        postService.updatePost(CONSTANTS.UPDATE_POST_URI + '/' + this.state.id, request)
-          .then((result) => {   
-            if (result.success) {        
-                this.setState({message: 'Your Post Updated!!!'});
-                this.setState({ showModel: !this.state.showModel });
-                this.setState({ id: 0 });
-                this.getAllUserPosts(this.state.user_id);  
-              } else {
-                this.setState({message: result.error});
-              }
-          },
-          (error) => {
-              this.setState({message: error});
-          })
-      );
-    }
   }
 
   editPost = (e) =>{
@@ -299,7 +192,7 @@ class postsView extends Component {
       return element.userId === this.state.user.id
     });
 
-    if(like !== undefined && like !== null && like.length > 0){
+    if(like != undefined && like != null && like.length > 0){
       return true;
     }
 
@@ -328,7 +221,7 @@ class postsView extends Component {
       commentService.createComment(CONSTANTS.CREATE_COMMENT_URI, request)
       .then((result) => {
         if (result.success === true) {   
-          item.showComment = !item.showComment;
+          item.showComment=!item.showComment;
           this.setState({selItem:item}); 
           this.getPost(item.id);  
         } else {
@@ -342,33 +235,11 @@ class postsView extends Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { i18n, t } = this.props;
 
     return (    
-      <div id="contentDashboard">
-        <div class="row width100">            
-            <PanelDashboardLeft user={this.state} page="posts">
-            </PanelDashboardLeft>
-            <div class="col-7 panelDashboard2 block"> 
-                <div class="row">
-                  <div class="col-2">
-                    {this.state.isOwner?  
-                      <div id="createPost" onClick={this.handlePostModel}>Create Post</div>
-                    :""}       
-                  </div>
-                  <div class="col">
-                    <h1><Trans i18nKey='profile:view.posts'>Posts</Trans></h1>
-                  </div>
-                  <div class="col-2">
-                    {this.state.isOwner?  
-                      <div></div>
-                    :""}       
-                  </div>
-                </div>        
-             <div class="row">
-                <div class="col-12">
-                  <ul id="postList">
-                  {this.state.posts && this.state.posts.map((item, index) => {
+      <ul id="postList">
+        {this.state.posts && this.state.posts.map((item, index) => {
                       return(
                         <li key={index}>
                           {this.state.isOwner? 
@@ -402,7 +273,7 @@ class postsView extends Component {
                              <div class="usrName">
                               <Link to={'/'+item.user.username}>{item.user.fullname}</Link>
                               <Moment format="MMM DD, YYYY">
-                                  {item.createdAt}
+                                  {item.createddate}
                               </Moment>
                              </div>
                             {(item.isprivate===1)?<div class="private" title="This post is private and will not be publicly visible">Private</div>:""} 
@@ -412,91 +283,47 @@ class postsView extends Component {
                             <div class="col-4">
                               {this.isUserLike(item)?
                                 <div class="likeWrap" style={{color: "#b90900"}}>({item.likes.length})<div class="like" style={{color: "#b90900"}} title="You liked this post"><IoMdThumbsUp/></div><Trans i18nKey='profile:view.liked'>Liked</Trans></div>
-                                :<div class="likeWrap" onClick={this.likePost(item.id)}>({item.likes.length})<div class="like" title="Like this post"><IoMdThumbsUp/></div><Trans i18nKey='profile:view.like'>Like</Trans></div>}
+                                :<div class="likeWrap">({item.likes.length})<div class="like" title="Like this post" onClick={this.likePost(item.id)}><IoMdThumbsUp/></div><Trans i18nKey='profile:view.like'>Like</Trans></div>}
                             </div>                         
                             <div class="col-4 alignCenter">
-                              <div class="commentWrap" onClick={this.showComment(item)}>({item.comments.length})<div class="comment" title="Write comment on this post"><IoIosChatboxes/></div><Trans i18nKey='profile:view.comment'>Comment</Trans></div>
+                              <div class="commentWrap">({item.comments.length})<div class="comment" title="Write comment on this post" onClick={this.showComment(item)}><IoIosChatboxes/></div><Trans i18nKey='profile:view.comment'>Comment</Trans></div>
                             </div>                         
                             <div class="col-4 alignRight">
                               <div class="shareWrap"><div class="share" title="Share this post"><IoIosShareAlt/></div><Trans i18nKey='profile:view.share'>Share</Trans></div>
                             </div>           
                           </div>
-                          {this.state.selItem && this.state.selItem.id===item.id && this.state.selItem.showComment?
+                          {this.state.selItem && this.state.selItem.id==item.id && this.state.selItem.showComment?
                             <>
-                              <div class="addComment">
-                                <div class="row">
-                                  <div class="col" style={{paddingRight: "0px"}}>
-                                    <textarea id="postComment" name="postComment" placeholder="Write a comment" onChange={this.handlePostComment(this.state.selItem)}></textarea>
-                                  </div>
-                                  <div class="col-2" style={{paddingLeft: "0px", display:"flex"}}>
-                                    <button type="button" id="addCommentButton" onClick={this.addComment(this.state.selItem)}>Post Comment</button>
-                                  </div>
-                                </div>
-                              </div>
                               <ul class="comments">
                                 {item.comments && item.comments.map((comment, ind) => {
                                   return(
                                   <li key={index+ ' ' +ind}>
                                     <Moment fromNow>
-                                      {comment.createdAt}
+                                      {comment.createddate}
                                     </Moment><br/>
                                     {comment.message}
                                   </li>
                                 );})}
                               </ul>
+                              <div class="addComment">
+                                <div class="row">
+                                  <div class="col">
+                                    <textarea id="postComment" name="postComment" onChange={this.handlePostComment(this.state.selItem)}></textarea>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col">
+                                    <button type="button" id="addCommentButton" onClick={this.addComment(this.state.selItem)}>Post Comment</button>
+                                  </div>
+                                </div>
+                              </div>
                             </>
                           :""}
                         </li>
                       );
-                    })}
-                  </ul>
-                </div>
-              </div>               
-            </div>
-            <div class="col panelDashboard3">              
-            </div>
-        </div>
-        { this.state.showModel &&  
-          <div class="modelCityWrap">
-            <div class="modelCityBack">
-            </div> 
-            <div class="modelPost"> 
-              <form>                         
-                <div class="row">
-                  <div class="col">                            
-                  </div>                
-                  <div class="col-1 right">
-                    <span class="close" onClick={this.handlePostModel}>X</span>
-                  </div>
-                </div>                                    
-                <div class="row">
-                  <div class="col"> 
-                    <h2>
-                    {
-                      (this.state.id > 0)?
-                        <Trans i18nKey='profile:view.editpost'>Edit Post</Trans>
-                        :
-                        <Trans i18nKey='profile:view.createpost'>Create Post</Trans>
-                      }
-                    </h2>                             
-                  </div>       
-                </div>                       
-                <div class="row">
-                  <div class="col"> 
-                    <textarea id="postMessage" name="postMessage" class="txtPost" required onChange={this.handleInputChange}>{this.state.postMessage}</textarea>                   
-                  </div>
-                </div>                     
-                <div class="row">
-                  <div class="col"> 
-                    <button type="button" id="btnPost" onClick={this.handlePost}>Post</button>                       
-                  </div>
-                </div>
-              </form>
-            </div>
-           </div>
-        }       
-      </div>
+        })}
+      </ul>
     );
   }
 }
-export default withRouter(withTranslation('profile')(postsView));
+export default withRouter(withTranslation('profile')(postSingle));

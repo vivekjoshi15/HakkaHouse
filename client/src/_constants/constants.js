@@ -1,5 +1,5 @@
-var ENV_URI = 'https://stg-app.com';
-var WEB_URI = 'http://.com:5000';
+var ENV_URI = 'https://www.hakka.house/';
+var WEB_URI = 'http://localhost:5000/';
 
 export default {
     // env
@@ -33,4 +33,25 @@ export default {
     CREATE_POST_URI: '/v1/createPost',
     UPDATE_POST_URI: '/v1/updatePost',
     REMOVE_POST_URI: '/v1/removePost',
+    UPDATE_ISACTIVE_URI: '/v1/updateIsActive',
+    UPDATE_ISPRIVATE_URI: '/v1/updateIsPrivate',
+
+    GET_POST_LIKES_URI: '/v1/getPostLikes',
+    GET_LIKE_ID_URI: '/v1/getLikeById',
+    CREATE_LIKE_URI: '/v1/createLike',
+    UPDATE_LIKE_URI: '/v1/updateLike',
+    REMOVE_LIKE_URI: '/v1/removeLike',
+
+    GET_USER_MESSAGES_URI: '/v1/getUserMessages',
+    GET_MESSAGES_URI: '/v1/getSenderMessages',
+    GET_MESSAGE_ID_URI: '/v1/getMessageById',
+    CREATE_MESSAGE_URI: '/v1/createMessage',
+    UPDATE_MESSAGE_URI: '/v1/updateMessage',
+    REMOVE_MESSAGE_URI: '/v1/removeMessage',
+
+    GET_POST_COMMENTS_URI: '/v1/getPostComments',
+    GET_COMMENT_ID_URI: '/v1/getCommentById',
+    CREATE_COMMENT_URI: '/v1/createComment',
+    UPDATE_COMMENT_URI: '/v1/updateComment',
+    REMOVE_COMMENT_URI: '/v1/removeComment',
 }

@@ -6,7 +6,7 @@ const model = require('../models/index.model');
 const getPhoneCodes = async function (req, res) {
     let phonecodes, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, phonecodes] = await to(model.countries.findAll({ attributes: ['id', 'phonecode', 'sortname'] }));
+    [err, phonecodes] = await to(model.country.findAll({ attributes: ['id', 'phonecode', 'sortname'] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -16,7 +16,7 @@ const getPhoneCodes = async function (req, res) {
 const getAllCountries = async function (req, res) {
     let countries, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, countries] = await to(model.countries.findAll({ attributes: ['id', 'name', 'sortname'] }));
+    [err, countries] = await to(model.country.findAll({ attributes: ['id', 'name', 'sortname'] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -27,7 +27,7 @@ const getCountryStates = async function (req, res) {
     let states, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, states] = await to(model.states.findAll({ where: { country_id: body.id } }));
+    [err, states] = await to(model.state.findAll({ where: { country_id: body.id } }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -38,7 +38,7 @@ const getStateCities = async function (req, res) {
     let cities, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, cities] = await to(model.cities.findAll({ where: { state_id: body.id } }));
+    [err, cities] = await to(model.city.findAll({ where: { state_id: body.id } }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -49,7 +49,7 @@ const getCountryByName = async function (req, res) {
     let country, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, country] = await to(model.countries.findOne({ where: { name: body.name } }));
+    [err, country] = await to(model.country.findOne({ where: { name: body.name } }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -60,7 +60,7 @@ const getCityByName = async function (req, res) {
     let city, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, city] = await to(model.cities.findOne({ where: { name: body.name } }));
+    [err, city] = await to(model.city.findOne({ where: { name: body.name } }));
     if (err) {
         return ReE(res, err, 422);
     }

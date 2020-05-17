@@ -9,7 +9,7 @@ import forgetPassword from './forget-password';
 import login from './login';
 import register from './register';
 import { dashboardView }  from './dashboard';
-import { profileEdit, profileView, profileImage, profilePhotos }  from './profile';
+import { profileEdit, profileView, profileImage, profilePhotos, profileMessages }  from './profile';
 import { postEdit, postView, postsView }  from './post';
 import page404 from './404';
 import comingsoon from './coming-soon';
@@ -29,11 +29,12 @@ export default function Routes({ setBannerTop, setBannerText }) {
                 <PrivateRoute exact path='/profile/:username' component={profileView} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Profile' />   
                 
                 <PrivateRoute exact path='/profile/photos/:username' component={profilePhotos} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Photos' />
-                <PrivateRoute exact path='/profile/edit/:userId' component={profileEdit} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Profile Update' />
-                <PrivateRoute exact path='/profile/image/:userId' component={profileImage} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Profile Image' />
+                <PrivateRoute exact path='/profile/messages/:username' component={profileMessages} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Messages' />
+                <PrivateRoute exact path='/profile/edit/:id' component={profileEdit} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Profile Update' />
+                <PrivateRoute exact path='/profile/image/:id' component={profileImage} setBannerTop={setBannerTop} setBannerText={setBannerText} title='Profile Image' />
                 
                 <PrivateRoute exact path='/post/:username' component={postView} setBannerTop={setBannerTop} setBannerText={setBannerText} />
-                <PrivateRoute exact path='/post/edit/:userId' component={postEdit} setBannerTop={setBannerTop} setBannerText={setBannerText} />
+                <PrivateRoute exact path='/post/edit/:id' component={postEdit} setBannerTop={setBannerTop} setBannerText={setBannerText} />
 
                 <CustomRoute exact path='/eat' component={comingsoon} setBannerText={setBannerText} />
                 <CustomRoute exact path='/shop' component={comingsoon} setBannerText={setBannerText} />

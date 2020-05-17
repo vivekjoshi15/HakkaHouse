@@ -8,6 +8,12 @@
 		"edit": "编辑个人资料",
 		"about": "關於",
 		"photos": "相片",
+		"messages": "留言内容",
+		"like": "喜欢",
+		"liked": "喜欢",
+		"share": "分享",
+		"comment": "评论",
+		"comments": "评论",
 		"email": "电子邮件",
 		"gender": "性别",
 		"myhobbies": "我的爱好",
@@ -16,6 +22,15 @@
 		"mywork": "我的工作",
 		"phone": "电话",
 		"preflang": "首选语言",
-		"update": "更新图片"
+		"update": "更新图片",
+		"createpost": "建立讯息",
+		"editpost": "编辑帖子",
+		"deletepost": "删除帖子",
+		"hidepost": "隐藏帖子",
+		"privatepost": "设为私人",
+		"publicpost": "公之于众",
+		"posts": "帖子",
+		"editmessage": "编辑讯息",
+		"deletemessage": "删除留言"
 	}
 }

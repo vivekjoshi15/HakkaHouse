@@ -14,8 +14,9 @@ class postEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userid: 0, 
-      roleid: 1, 
+      id: 0,
+      user_id: 0, 
+      role_id: 2, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -54,7 +55,7 @@ class postEdit extends Component {
     let user = JSON.parse(localStorage.getItem('user'));
 
     trackPromise(
-      userService.getById(CONSTANTS.GET_USER_URL+'/'+user.userid)
+      userService.getById(CONSTANTS.GET_USER_URL+'/'+user.id)
         .then((result) => {  
           this.fillUser(result.user);
         })
@@ -62,7 +63,7 @@ class postEdit extends Component {
   }
 
   fillUser = (user) =>{
-    this.setState({ userid: user.userid });
+    this.setState({ user_id: user.id });
     this.setState({ firstname: user.firstname });
     this.setState({ lastname: user.lastname });
     this.setState({ email: user.email });
@@ -95,7 +96,7 @@ class postEdit extends Component {
   };
 
   handleCancel = (e) => {
-    this.props.history.push('/profile/view/'+this.state.user.userid);
+    this.props.history.push('/profile/view/'+this.state.user.user_id);
   }
 
   handleInputChange = (e) => {
@@ -130,7 +131,7 @@ class postEdit extends Component {
     }
 
     trackPromise(
-      fetch(CONSTANTS.UPDATE_URI + '/' + this.state.user.userid, {
+      fetch(CONSTANTS.UPDATE_URI + '/' + this.state.user.user_id, {
         method: 'PUT',
         body: JSON.stringify(this.state),
         headers: authHeader()
@@ -140,7 +141,7 @@ class postEdit extends Component {
           (result) => {
             if (result.success === true) {        
               this.setState({message: 'Your Profile Updated!!!'});
-              this.props.history.push('/profile/view/'+this.state.user.userid);
+              this.props.history.push('/profile/view/'+this.state.user.user_id);
             } else {
               this.setState({message: result.error});
             }

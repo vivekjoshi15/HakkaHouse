@@ -23,7 +23,8 @@ class profileImage extends Component {
     super(props);
     this.state = {
       isOwner:false,
-      userid: 0, 
+      id: 0, 
+      user_id: 0, 
       firstname: '', 
       lastname: '', 
       username: '', 
@@ -49,19 +50,20 @@ class profileImage extends Component {
     this.setState({ user: user });
 
     trackPromise(
-      userService.getById(CONSTANTS.GET_USER_URL+'/'+this.props.match.params.userId)
+      userService.getById(CONSTANTS.GET_USER_URL+'/'+this.props.match.params.id)
         .then((result) => {  
           if(result != null && result.user != null) {
-            this.setState({ userid: result.user.userid });
+            this.setState({ id: result.user.id });
+            this.setState({ user_id: result.user.id });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ username: result.user.username });
             this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });  
 
-            if(user != null && result.user.userid !== user.userid){
+            if(user != null && result.user.id !== user.id){
               this.props.history.push('/404?message=not authroized to view this page');
             }  
-            if(user != null && result.user.userid === user.userid){
+            if(user != null && result.user.id === user.id){
               this.setState({ isOwner: true});
             }
             this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });            
@@ -93,7 +95,7 @@ class profileImage extends Component {
     //}
     formData.append('file', this.state.imgCollection[0])
     formData.append('folder', 'assets');
-    formData.append('userid', this.state.userid);
+    formData.append('id', this.state.id);
 
     trackPromise(
       fetch(CONSTANTS.UPLOADIMAGE_URI, {

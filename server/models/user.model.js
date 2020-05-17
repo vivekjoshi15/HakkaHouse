@@ -4,18 +4,16 @@ const bcrypt_p       = require('bcrypt-promise');
 const jwt = require('jsonwebtoken');
 const { TE, to } = require('../services/util.service');
 const CONFIG = require('../config/config');
+const { Sequelize, Model, DataTypes, BuildOptions } = require('sequelize');
 
-module.exports = (sequelize, DataTypes) => {
-  var tb_user = sequelize.define('tb_user', {
-    userid: {
+module.exports = (sequelize, dataTypes) => {
+  class User extends Model {}
+  User.init({
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       allowNull: false,
       primaryKey: true,
-    },
-    roleid: {
-      type: DataTypes.INTEGER,
-      allowNull: false
     },
     username: DataTypes.STRING,
     password: DataTypes.STRING,
@@ -35,11 +33,22 @@ module.exports = (sequelize, DataTypes) => {
     birthday: DataTypes.STRING,
     profileimage: DataTypes.STRING,
     isactive: DataTypes.TINYINT,
-    createddate: DataTypes.DATE,
-    modifieddate: DataTypes.DATE
-  }); 
+    fullname: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.firstname} ${this.lastname}`;
+      },
+      set(value) {
+        throw new Error('Do not try to set the `fullName` value!');
+      }
+    }
+  }, { 
+    underscored: true,
+    sequelize, 
+    modelName: 'user' 
+  });
 
-  tb_user.beforeSave(async (user, options) => {
+  User.beforeSave(async (user, options) => {
     let err;
     if (user.changed('password')){
         let salt, hash
@@ -53,7 +62,7 @@ module.exports = (sequelize, DataTypes) => {
       }
   }); 
 
-  tb_user.prototype.comparePassword = async function (pw) {
+  User.prototype.comparePassword = async function (pw) {
     let err, pass;
     if (!this.password) TE('password not set');
     
@@ -68,17 +77,17 @@ module.exports = (sequelize, DataTypes) => {
       return this;
   };
   
-  tb_user.prototype.getJWT = function () {
+  User.prototype.getJWT = function () {
     let expiration_time = parseInt(CONFIG.jwt_expiration);
     console.log(expiration_time);
-    return "Bearer " + jwt.sign({ userid: this.userid }, CONFIG.jwt_encryption, { expiresIn: expiration_time });
+    return "Bearer " + jwt.sign({ id: this.id }, CONFIG.jwt_encryption, { expiresIn: expiration_time });
   };
 
-  tb_user.prototype.toWeb = function () {
+  User.prototype.toWeb = function () {
     let json = this.toJSON();
     return json;
   };
 
 
-  return tb_user;
+  return User;
 };

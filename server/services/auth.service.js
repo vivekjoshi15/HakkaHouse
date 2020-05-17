@@ -1,4 +1,4 @@
-const User = require('../models/tb_user.model');
+const User = require('../models/user.model');
 const model = require('../models/index.model');
 const validator = require('validator');
 const { to, TE, ReE } = require('./util.service');
@@ -28,14 +28,14 @@ const createUser = async (userInfo, res) => {
         auth_info.method = 'email';
         userInfo.email = unique_key;
 
-        [err, user] = await to(model.tb_user.findOne({ where: { email: unique_key } }));
+        [err, user] = await to(model.user.findOne({ where: { email: unique_key } }));
         if (user !== null) {
             ReE(res,'user with email already exists.')
 
             return null;
         }
         else {
-            [err, user] = await to(model.tb_user.create(userInfo));
+            [err, user] = await to(model.user.create(userInfo));
             if (err) {
                 ReE(res,'user already exists with that email ' + err.message);
             }
@@ -46,14 +46,14 @@ const createUser = async (userInfo, res) => {
     } else if (validator.isMobilePhone(unique_key, 'any')) {//checks if only phone number was sent
         auth_info.method = 'phone';
         userInfo.phone = unique_key;
-        [err, user] = await to(model.tb_user.findOne({ where: { phone: unique_key } }));
+        [err, user] = await to(model.user.findOne({ where: { phone: unique_key } }));
         if (user !== null) {
             ReE(res,'user with phone already exists.')
 
             return null;
         }
         else {
-            [err, user] = await to(model.tb_user.create(userInfo));
+            [err, user] = await to(model.user.create(userInfo));
             if (err) ReE(res,'user already exists with that phone number' + err.message);
 
             return user;
@@ -77,7 +77,7 @@ const authUser = async function (userInfo, res) {//returns token
     if (validator.isEmail(unique_key)) {
         auth_info.method = 'email';
         
-        [err, user] = await to(model.tb_user.findOne({ where: { email: unique_key } }));
+        [err, user] = await to(model.user.findOne({ where: { email: unique_key } }));
         if (err) ReE(res,'error '+ err.message);
         if (typeof user === 'undefined' || user === null) {
             ReE(res,'A valid username/email or password was not entered.')
@@ -85,7 +85,7 @@ const authUser = async function (userInfo, res) {//returns token
     } else if (validator.isMobilePhone(unique_key, 'any')) {//checks if only phone number was sent
         auth_info.method = 'phone';
        
-        [err, user] = await to(model.tb_user.findOne({ where: { phone: unique_key } }));
+        [err, user] = await to(model.user.findOne({ where: { phone: unique_key } }));
         if (err) ReE(res,'error '+ err.message);
         if (typeof user === 'undefined' || user === null) {
             ReE(res,'A valid username/email or password was not entered.')
@@ -93,7 +93,7 @@ const authUser = async function (userInfo, res) {//returns token
     }else { //checks if only username was sent
         auth_info.method = 'phone';
        
-        [err, user] = await to(model.tb_user.findOne({ where: { username: unique_key } }));
+        [err, user] = await to(model.user.findOne({ where: { username: unique_key } }));
         if (err) ReE(res,'error '+ err.message);
         if (typeof user === 'undefined' || user === null) {
             ReE(res,'A valid username/email or password was not entered.')
