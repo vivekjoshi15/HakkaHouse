@@ -17,7 +17,7 @@ class profileView extends Component {
       isOwner:false,
       id: 0, 
       user_id: 0, 
-      role_id: 1, 
+      roleId: 1, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -61,6 +61,7 @@ class profileView extends Component {
           if(result != null && result.user != null) {
             const birthday=(result.user.birthday)?result.user.birthday.toString().split('T')[0]: result.user.birthday;
 
+            this.setState({ roleId: result.user.roleId });
             this.setState({ id: result.user.id });
             this.setState({ user_id: result.user.id });
             this.setState({ firstname: result.user.firstname });

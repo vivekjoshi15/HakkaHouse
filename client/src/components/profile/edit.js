@@ -19,7 +19,7 @@ class profileEdit extends Component {
       isOwner:false,
       id: 0, 
       user_id: 0, 
-      role_id: 1, 
+      roleId: 2, 
       message:'', 
       firstname: '', 
       lastname: '', 
@@ -78,6 +78,7 @@ class profileEdit extends Component {
 
             const birthday=(result.user.birthday)?new Date(result.user.birthday.toString().split('T')[0]): result.user.birthday;
 
+            this.setState({ roleId: result.user.roleId });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ email: result.user.email });

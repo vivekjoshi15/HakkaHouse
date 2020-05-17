@@ -12,7 +12,7 @@ class register extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      role_id: 1, 
+      roleId: 2, 
       firstname: '', 
       lastname: '', 
       username: '',
