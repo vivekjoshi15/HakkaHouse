@@ -16,7 +16,7 @@ class App extends Component {
     this.state = {
       user: {},
       bannerTop: './bannerTop.jpg',
-      bannerText: 'Hakka.House'
+      bannerText: '' //Hakka.House
     };
     this.setBannerTop = this.setBannerTop.bind(this);
     this.setBannerText = this.setBannerText.bind(this);
@@ -27,8 +27,8 @@ class App extends Component {
   }
 
   setBannerText = (data) =>{
-    if(this.state.bannerText !== data)
-      this.setState({ bannerText: data})
+    //if(this.state.bannerText !== data)
+    //  this.setState({ bannerText: data})
   }
 
   componentDidMount() {
@@ -37,7 +37,7 @@ class App extends Component {
       let user = JSON.parse(localStorage.getItem('user'));
       if(user !== null){
         if(user.city !== null && user.city !== undefined && user.city !== undefined){
-          this.setState({ bannerText: user.city})
+          //this.setState({ bannerText: user.city})
           if(user.city.toString().toLowerCase() === 'toronto')
             this.setState({ bannerTop: './'+user.city.toString().toLowerCase() + '.jpg' });
           else if(user.city.toString().toLowerCase() === 'seattle')
