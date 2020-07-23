@@ -6,7 +6,9 @@ const getUserMessages = async function (req, res) {
     const body = req.params;
     let messages, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, messages] = await to(model.message.findAll({ where: { user_id: body.user_id, isactive : 1 }, order: [ ['created_at', 'DESC'] ] }));
+    [err, messages] = await to(model.message.findAll({ where: { user_id: body.user_id, isactive : 1 }, 
+                        include: ["user", "sender"],
+                        order: [ ['created_at', 'ASC'] ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -17,7 +19,9 @@ const getSenderMessages = async function (req, res) {
     const body = req.params;
     let messages, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, messages] = await to(model.message.findAll({ where: { sender_id: body.user_id, isactive : 1 }, order: [ ['created_at', 'DESC'] ] }));
+    [err, messages] = await to(model.message.findAll({ where: { sender_id: body.user_id, isactive : 1 }, 
+                        include: ["user", "sender"],
+                        order: [ ['created_at', 'ASC'] ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -27,7 +31,8 @@ const getSenderMessages = async function (req, res) {
 const getById = async function (req, res) {
     const body = req.params;
     let err, message;
-    [err, message] = await to(model.message.findOne({ where: { id: body.id, isactive : 1 } }));
+    [err, message] = await to(model.message.findOne({ where: { id: body.id, isactive : 1 }, 
+                        include: ["user", "sender"] }));
     if (err) return ReE(res, err, 422);
     return ReS(res, { message: message });
 }

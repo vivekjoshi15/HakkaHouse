@@ -5,8 +5,11 @@ import { trackPromise } from 'react-promise-tracker';
 import { withTranslation, Trans } from 'react-i18next';
 import Select from "react-select";
 import Moment from 'react-moment';
+import ReactPlayer from 'react-player';
+import ModalImage from "react-modal-image";
 
 import  CONSTANTS from'../../_constants/constants';
+import { authHeader } from '../../_helpers/auth-header';
 import { userService, countryService, postService, likeService, commentService } from '../../_services';
 
 import { IoMdThumbsUp, IoIosChatboxes, IoIosShareAlt } from "react-icons/io";
@@ -30,6 +33,9 @@ class dashboardView extends Component {
       profileimage:'',
       city: '',
       state: '',
+      selCity:{},
+      selState:{},
+      selCountry:{},
       user: {},
       country: '', 
       users:[],
@@ -72,7 +78,7 @@ class dashboardView extends Component {
     this.setState({ firstname: user.firstname });
     this.setState({ lastname: user.lastname });
     this.setState({ username: user.username });
-    this.setState({ profileimage: (user.profileimage !=='' && user.profileimage !== undefined && user.profileimage !== null)? user.profileimage:'' });  
+    this.setState({ profileimage: (user.profileimage !== '' && user.profileimage !== undefined && user.profileimage !== null)? user.profileimage : '' });  
   }
 
   getUsers = () => {
@@ -80,16 +86,33 @@ class dashboardView extends Component {
       userService.getUsersByCSC(CONSTANTS.GET_USERS_CSC_URL+'/'+this.props.match.params.city+'/0/0')
         .then((result) => {
           this.setState({ users: result.user });
-          this.getAllPosts();
+          if(result.user.length > 0){
+            const users=[];
+            result.user.map((item, index) => {
+              users.push(item.id);
+            });
+            this.getAllPosts(users);
+          }
+          else{
+            this.setState({ posts: [] });
+            this.setState({ message: "No Posts" });  
+          }
         })
     );
   }
 
   getCity = async() => {
+
     await countryService.getCityByName(CONSTANTS.GET_CITY_URL+'/'+this.props.match.params.city)
       .then((result) => {
           this.setState({city_id: result.city.id});
           if(this.state.city_id !==0){
+            this.setState({selCity: result.city});
+            this.setState({selState: result.city.state});
+            this.setState({selCountry: result.city.state.country});
+
+            this.getStates(result.city.state.countryId);
+            this.getCities(result.city.stateId);
             countryService.getCityInfo(CONSTANTS.GET_CITY_INFO_URL+'/'+this.state.city_id)
               .then((result) => {
                 if(result.info)
@@ -110,7 +133,7 @@ class dashboardView extends Component {
     trackPromise(
       countryService.getStates(CONSTANTS.STATES_URL+"/"+id)
         .then((result) => {
-          this.setState({states: result.states});
+          this.setState({ states: result.states });
         })    
     );
   }
@@ -119,44 +142,77 @@ class dashboardView extends Component {
     trackPromise(
       countryService.getCities(CONSTANTS.CITIES_URL+"/"+id)
         .then((result) => {
-          this.setState({cities: result.cities});
+          this.setState({ cities: result.cities });
         })  
     );
   }
 
-  getAllPosts = () => {
-    trackPromise(
-      postService.getAllPosts(CONSTANTS.GET_POSTS_URI)
-        .then((result) => {     
-          if(result != null && result.posts != null) {
-            this.setState({ posts: result.posts });
-          }
-          else
-          {
-            this.setState({ message: "No Posts" });            
-          }
-        })
-    );
-  }
-
   handleChangeView = () =>{
-    this.setState({isChange: !this.state.isChange});
+    this.setState({ isChange: !this.state.isChange });
   }
 
   changeCountry = async(value) =>{
-    this.setState({country: value.name});
+    this.setState({ country: value.name });
     this.getStates(value.id);
   }
 
   changeState = async(value) =>{
-    this.setState({state: value.name});
+    this.setState({ state: value.name });
     this.getCities(value.id);
   }
 
   changeCity = async(value) =>{
-    this.setState({city: value.name});
-    this.setState({isChange: false});
-    this.props.history.push('/city/'+value.name);
+    this.setState({ city: value.name });
+    this.setState({ isChange: false });
+    this.props.history.push('/city/' + value.name);
+  }
+
+  getAllPosts = (users) => {
+    const request={
+      users: users
+    }
+
+    fetch(CONSTANTS.GET_USERS_POSTS_URI, {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: authHeader()
+      })
+      .then(res => res.json())
+      .then(
+        (result) => {           
+            if(result != null && result.posts != null) {
+              this.setState({ posts: result.posts });
+            }
+            else
+            {
+              this.setState({ message: "No Posts" });            
+            }
+          },
+          (error) => {
+            this.setState({message: error});
+          })    
+        .catch(err => {
+          console.error(err);
+          this.setState({message: 'Error logging in please try again'+ err});
+        })
+  }
+
+  getPost = (id) => {
+    trackPromise(
+      postService.getById(CONSTANTS.GET_POST_ID_URI+'/'+id)
+        .then((result) => {     
+          if(result != null && result.post != null) {
+            //const newPosts = this.state.posts.splice(this.state.posts.indexOf(id, 0), 1); 
+            const newPosts = [ ...this.state.posts.filter(p => p.id !== parseInt(id)), result.post];
+            newPosts.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            this.setState({ posts: newPosts }); 
+          }
+          else
+          {
+            this.setState({ message: "Invalid Post" });            
+          }
+        })
+    );
   }
 
   //Post Functions 
@@ -178,31 +234,25 @@ class dashboardView extends Component {
   }
 
   deletePost= param => (e) => {
-    trackPromise(
-      postService.removePost(CONSTANTS.REMOVE_POST_URI + '/' + e.target.id)
-        .then((result) => { 
-          const newPosts = this.state.posts.splice(param, 1); //this.state.posts.indexOf(e.target.id)
-          this.setState({posts: newPosts}); 
-          //this.getAllUserPosts(result.user.user_id);  
-        },
-        (error) => {
-            this.setState({message: error});
-        })
-    );
+    const id = e.target.id;
+    postService.removePost(CONSTANTS.REMOVE_POST_URI + '/' + id)
+      .then((result) => { 
+        this.setState({ posts: this.state.posts.filter(p => p.id !== parseInt(id)) });
+      },
+      (error) => {
+        this.setState({message: error});
+      })
   }
 
   hidePost = param => (e) =>{
     const request={
       isactive: 0,
     }
-
-    trackPromise(
-      postService.updateIsPrivate(CONSTANTS.UPDATE_ISACTIVE_URI + "/" + e.target.id, request)
+    const id = e.target.id;
+    postService.updateIsPrivate(CONSTANTS.UPDATE_ISACTIVE_URI + "/" + id, request)
       .then((result) => {
-        if (result.success === true) {        
-          //const newPosts = this.state.posts.splice(param, 1);
-          //this.setState({posts: newPosts});
-          this.getAllUserPosts(this.state.user_id);  
+        if (result.success === true) {   
+          this.getPost(id);     
         } else {
           this.setState({message: result.error});
         }
@@ -210,20 +260,17 @@ class dashboardView extends Component {
       (error) => {
           this.setState({message: error});
       })
-    );
   }
 
   privatePost= param => (e) => {
     const request={
       isprivate: (param === 0)?1:0,
     }
-
-    trackPromise(
-      postService.updateIsPrivate(CONSTANTS.UPDATE_ISPRIVATE_URI + "/" + e.target.id, request)
+    const id = e.target.id;
+    postService.updateIsPrivate(CONSTANTS.UPDATE_ISPRIVATE_URI + "/" + id, request)
       .then((result) => {
         if (result.success === true) {   
-          this.getPost(e.target.id);           
-          //this.getAllUserPosts(this.state.user_id);  
+          this.getPost(id);            
         } else {
           this.setState({message: result.error});
         }
@@ -231,7 +278,6 @@ class dashboardView extends Component {
       (error) => {
         this.setState({message: error});
       })
-    );   
   }
 
   likePost = id => (e) =>{
@@ -239,8 +285,8 @@ class dashboardView extends Component {
       userId: this.state.user_id,
       postId: id
     }
-    trackPromise(
-      likeService.createLike(CONSTANTS.CREATE_LIKE_URI, request)
+    
+    likeService.createLike(CONSTANTS.CREATE_LIKE_URI, request)
       .then((result) => {
         if (result.success === true) {  
           this.getPost(id);     
@@ -252,7 +298,6 @@ class dashboardView extends Component {
       (error) => {
           this.setState({message: error});
       })
-    );
   }
 
   isUserLike = (item) =>{
@@ -278,32 +323,35 @@ class dashboardView extends Component {
   }
 
   addComment = item => (e) =>{
-
-    const request={
-      userId: this.state.user_id,
-      postId: item.id,
-      message: item.postComment
-    }
-
-    trackPromise(
+    
+    if(item.postComment !== "" && item.postComment.trim() !== ""){
+      const request={
+        userId: this.state.user_id,
+        postId: item.id,
+        message: item.postComment
+      }
+      
       commentService.createComment(CONSTANTS.CREATE_COMMENT_URI, request)
-      .then((result) => {
-        if (result.success === true) {   
-          item.showComment=!item.showComment;
-          this.setState({selItem:item}); 
-          this.getPost(item.id);  
-        } else {
-          this.setState({message: result.error});
-        }
-      },
-      (error) => {
-          this.setState({message: error});
-      })
-    );
+        .then((result) => {
+          if (result.success === true) {   
+            //item.showComment=!item.showComment;
+            //this.setState({selItem:item}); 
+            this.getPost(item.id);  
+          } else {
+            this.setState({message: result.error});
+          }
+        },
+        (error) => {
+            this.setState({message: error});
+        })
+    }
   }
 
   render() {
     const { t } = this.props;
+    const selCountry={name: this.state.selCountry.name, label: this.state.selCountry.id};
+    const selState={name: this.state.selState.name, label: this.state.selState.id};
+    const selCity={name: this.state.selCity.name, label: this.state.selCity.id};
 
     return (    
       <div id="contentDashboard">
@@ -348,6 +396,7 @@ class dashboardView extends Component {
                       isClearable={false}
                       isSearchable={true}
                       options={this.state.countries}
+                      value={selCountry}
                       required
                       onChange={(value) => { this.changeCountry(value); }}
                     />  
@@ -363,6 +412,7 @@ class dashboardView extends Component {
                       isClearable={false}
                       isSearchable={true}
                       options={this.state.states}
+                      value={selState}
                       required      
                       onChange={(value) => { this.changeState(value); }}                
                     />  
@@ -378,6 +428,7 @@ class dashboardView extends Component {
                       isClearable={false}
                       isSearchable={true}
                       options={this.state.cities}
+                      value={selCity}
                       required      
                       onChange={(value) => { this.changeCity(value); }}                
                     /> 
@@ -396,7 +447,6 @@ class dashboardView extends Component {
                               <img class="hu5pjgll lzf7d6o1" src="https://static.xx.fbcdn.net/rsrc.php/v3/yJ/r/-OQq3c6soLn.png" alt="" height="20" width="20" />
                               <div class="postMenu">
                                 <ul>
-                                  <li><div onClick={this.editPost} id={item.id}><Trans i18nKey='profile:view.editpost'>Edit Post</Trans></div></li>
                                   <li><div onClick={this.deletePost(index)} id={item.id}><Trans i18nKey='profile:view.deletepost'>Delete Post</Trans></div></li>
                                   <li><div onClick={this.hidePost(index)} id={item.id}><Trans i18nKey='profile:view.hidepost'>Hide Post</Trans></div></li>
                                   <li>
@@ -426,7 +476,30 @@ class dashboardView extends Component {
                              </div>
                             {(item.isprivate===1)?<div class="private" title="This post is private and will not be publicly visible">Private</div>:""} 
                           </div>
-                          <div class="postMessage">{item.message}</div>
+                          <div class="postMessage">
+                            {(item.type==="Text")?
+                              item.message:
+                              ((item.type==="Video")?
+                                <ReactPlayer  
+                                  url={item.message} 
+                                  width="600px"
+                                  height="300px"
+                                  playing="false"
+                                  controls="true"
+                                  volume="0"
+                                  muted
+                                  style={{margin: '0 auto'}}
+                                />:
+                                <ModalImage
+                                  small={item.message}
+                                  large={item.message}
+                                  className="postImage"
+                                  alt="click to view large image"
+                                  hideDownload="true"
+                                  showRotate="true"
+                                />)
+                              }
+                          </div>
                           <div class="row postFeatures">               
                             <div class="col-4">
                               {this.isUserLike(item)?
@@ -456,10 +529,18 @@ class dashboardView extends Component {
                                 {item.comments && item.comments.map((comment, ind) => {
                                   return(
                                   <li key={index+ ' ' +ind}>
-                                    <Moment fromNow>
-                                      {comment.createdAt}
-                                    </Moment><br/>
-                                    {comment.message}
+                                    <div class="date">
+                                       <div class="logoImg">
+                                        { <Link to={'/'+comment.user.username}>{(comment.user.profileimage !=='' && comment.user.profileimage !== undefined && comment.user.profileimage !== null)?<img src={comment.user.profileimage} alt="" border="0" />:<img src="./blank-profile.jpg" alt="" border="0" />}</Link> }
+                                       </div>
+                                       <div class="usrName">
+                                        <Link to={'/'+comment.user.username}>{comment.user.fullname}</Link>
+                                        <Moment fromNow>
+                                          {comment.createdAt}
+                                        </Moment>
+                                       </div>
+                                    </div>
+                                    <div class="commentMessage">{comment.message}</div>
                                   </li>
                                 );})}
                               </ul>

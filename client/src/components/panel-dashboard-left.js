@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withRouter } from "react-router";
 import { withTranslation, Trans } from 'react-i18next';
+import ModalImage from "react-modal-image";
 
 class PanelDashboardLeft extends Component {
 
@@ -15,7 +16,18 @@ class PanelDashboardLeft extends Component {
         </div>    
         <div class="row">
           <div class="col">   
-            {(this.props.user.profileimage !=='' )?<img src={this.props.user.profileimage}  alt="" class="profileimage" />:<img src="./blank-profile.jpg"  alt="" class="profileimage" />}
+            {(this.props.user.profileimage !=='' )?
+              <ModalImage
+                small={this.props.user.profileimage}
+                large={this.props.user.profileimage}
+                className="profileimage"
+                alt="click to view large image"
+                hideDownload="true"
+                showRotate="true"
+              />
+              :
+              <img src="./blank-profile.jpg"  alt="" class="profileimage" />
+            }
             {this.props.user.isOwner?<div class="title">(<Link to={'/profile/image/'+this.props.user.user_id}><Trans i18nKey='profile:view.update'>update image</Trans></Link>)</div>:""}
           </div>
         </div>   

@@ -6,7 +6,7 @@ const getPostComments = async function (req, res) {
     const body = req.params;
     let comments, err;
     res.setHeader('Content-Type', 'application/json');
-    [err, comments] = await to(model.comment.findAll({ where: { post_id: body.post_id, isactive : 1 }, order: [ ['createddate', 'DESC'] ] }));
+    [err, comments] = await to(model.comment.findAll({ where: { post_id: body.post_id, isactive : 1 }, include: ["user", "post"], order: [ ['createddate', 'DESC'] ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -16,7 +16,7 @@ const getPostComments = async function (req, res) {
 const getById = async function (req, res) {
     const body = req.params;
     let err, comment;
-    [err, comment] = await to(model.comment.findOne({ where: { id: body.id, isactive : 1 } }));
+    [err, comment] = await to(model.comment.findOne({ where: { id: body.id, isactive : 1 }, include: ["user", "post"] }));
     if (err) return ReE(res, err, 422);
     return ReS(res, { comment: comment });
 }

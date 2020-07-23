@@ -145,7 +145,7 @@ class register extends Component {
             if (result.success === true) {        
               result.user.authdata = result.token;
               localStorage.setItem('user', JSON.stringify(result.user));
-              this.setState({message: 'Your account created successfully!!!. Please click confirmation email from your inbox.'});
+              this.setState({message: 'Your account created successfully!!!.<br/>Please click confirmation email from your inbox.'});
               //this.props.history.push('/profile/view/'+result.user.userid);
             } else {
               this.setState({message: result.error});

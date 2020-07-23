@@ -27,7 +27,7 @@ const getCountryStates = async function (req, res) {
     let states, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, states] = await to(model.state.findAll({ where: { country_id: body.id } }));
+    [err, states] = await to(model.state.findAll({ where: { country_id: body.id }, include: [ "country" ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -38,7 +38,7 @@ const getStateCities = async function (req, res) {
     let cities, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, cities] = await to(model.city.findAll({ where: { state_id: body.id } }));
+    [err, cities] = await to(model.city.findAll({ where: { state_id: body.id }, include: [ "state" ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -60,7 +60,7 @@ const getCityByName = async function (req, res) {
     let city, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, city] = await to(model.city.findOne({ where: { name: body.name } }));
+    [err, city] = await to(model.city.findOne({ where: { name: body.name }, include: [ { model:model.state, as: 'state', include: [ "country" ] } ] }));
     if (err) {
         return ReE(res, err, 422);
     }
@@ -71,7 +71,7 @@ const getCityDetail = async function (req, res) {
     let info, err;
     const body = req.params;
     res.setHeader('Content-Type', 'application/json');
-    [err, info] = await to(model.tb_city_info.findOne({ where: { city_id: body.id } }));
+    [err, info] = await to(model.city_info.findOne({ where: { city_id: body.id }, include: [ "city" ] }));
     if (err) {
         return ReE(res, err, 422);
     }

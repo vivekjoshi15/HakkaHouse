@@ -32,6 +32,8 @@ export const fetchPostWithDelay = (url, data) => {
 };
 
 export const fetchPutWithDelay = (url, data) => {
+  console.log(url);
+  console.log(data);
   const promise = new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(

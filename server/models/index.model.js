@@ -154,5 +154,11 @@ db.message.belongsTo(db.user, { as: "user",
   }
 });
 db.user.hasMany(db.message, { as: "sender_messages", foreignKey: { name:'sender_id', allowNull: false } });
+db.message.belongsTo(db.user, { as: "sender",
+  foreignKey: {
+    name:'sender_id',
+    allowNull: false
+  }
+});
 
 module.exports = db

@@ -19,8 +19,8 @@ class profileMessages extends Component {
       message:'',  
       isOwner:false,
       showAddMessage: false,
-      user_id: 0, 
-      sender_id: 0, 
+      userId: 0, 
+      senderId: 0, 
       firstname: '', 
       lastname: '', 
       username: '', 
@@ -52,12 +52,12 @@ class profileMessages extends Component {
       userService.getByUsername(CONSTANTS.GET_USERNAME_URL+'/'+this.props.match.params.username)
         .then((result) => {     
           if(result != null && result.user != null) {
-            this.setState({ user_id: result.user.id });
+            this.setState({ userId: result.user.id });
             this.setState({ firstname: result.user.firstname });
             this.setState({ lastname: result.user.lastname });
             this.setState({ username: result.user.username });
             this.setState({ profileimage: (result.user.profileimage !=='' && result.user.profileimage !== undefined && result.user.profileimage !== null)? result.user.profileimage:'' });  
-            this.setState({ sender_id: user.id}); 
+            this.setState({ senderId: user.id}); 
 
             if(user != null && result.user.id === user.id){
               this.setState({ isOwner: true});
@@ -76,9 +76,9 @@ class profileMessages extends Component {
     );
   }
 
-  getAllUserMessages = (user_id) => {
+  getAllUserMessages = (id) => {
     trackPromise(
-      messageService.getUserMessages(CONSTANTS.GET_USER_MESSAGES_URI+'/'+user_id)
+      messageService.getUserMessages(CONSTANTS.GET_USER_MESSAGES_URI+'/'+id)
         .then((result) => {     
           if(result != null && result.messages != null) {
             this.setState({ messages: result.messages });
@@ -104,8 +104,7 @@ class profileMessages extends Component {
   editMessage = (e) =>{
     this.setState({ id: e.target.id });
 
-    trackPromise(
-      messageService.getMessageById(CONSTANTS.GET_MESSAGE_ID_URI + '/' + e.target.id)
+    messageService.getMessageById(CONSTANTS.GET_MESSAGE_ID_URI + '/' + e.target.id)
         .then((result) => {   
           if(result != null) { 
             this.setState({messageDesc: result.message.message});   
@@ -115,21 +114,17 @@ class profileMessages extends Component {
         (error) => {
           this.setState({message: error});
         })
-    );
   }
 
   deleteMessage= param => (e) => {
-    trackPromise(
-      messageService.removeMessage(CONSTANTS.REMOVE_MESSAGE_URI + '/' + e.target.id)
+    const id = e.target.id;
+    messageService.removeMessage(CONSTANTS.REMOVE_MESSAGE_URI + '/' + id)
         .then((result) => { 
-          //const newPosts = this.state.posts.splice(param, 1); //this.state.posts.indexOf(e.target.id)
-          //this.setState({posts: newPosts}); 
-          this.getAllUserMessages(this.state.user_id);   
+          this.setState({ messages: this.state.messages.filter(p => p.id !== parseInt(id)) });
         },
         (error) => {
             this.setState({message: error});
         })
-    );
   }
 
   handlePostMessage =(e) =>{
@@ -146,8 +141,8 @@ class profileMessages extends Component {
     if(this.state.id === 0){
 
       const request={
-        user_id: this.state.user_id,
-        sender_id: this.state.sender_id,
+        userId: this.state.userId,
+        sender_id: this.state.senderId,
         message: this.state.messageDesc,
         isread: 0,
         isactive: 1     
@@ -183,7 +178,7 @@ class profileMessages extends Component {
                 this.setState({message: 'Message Updated!!!'});
                 this.setState({ showAddMessage: !this.state.showAddMessage });
                 this.setState({ id: 0 });
-                this.getAllUserMessages(this.state.user_id);   
+                this.getAllUserMessages(this.state.userId);   
               } else {
                 this.setState({message: result.error});
               }
@@ -233,9 +228,15 @@ class profileMessages extends Component {
                               </div>
                             </div>
                             <div class="date">
-                              <Moment format="MMM DD, YYYY">
-                                {item.createddate}
-                              </Moment>
+                              <div class="logoImg">
+                                { <Link to={'/'+item.sender.username}>{(item.sender.profileimage !=='' && item.sender.profileimage !== undefined && item.sender.profileimage !== null)?<img src={item.sender.profileimage} alt="" border="0" />:<img src="./blank-profile.jpg" alt="" border="0" />}</Link> }
+                              </div>
+                              <div class="usrName">
+                                <Link to={'/'+item.sender.username}>{item.sender.fullname}</Link>
+                                <Moment format="MMM DD, YYYY">
+                                    {item.createdAt}
+                                </Moment>
+                              </div>
                             </div>
                             <div class="postMessage">{item.message}</div>
                           </li>

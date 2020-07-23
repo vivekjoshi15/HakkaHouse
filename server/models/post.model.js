@@ -12,7 +12,9 @@ module.exports = (sequelize, dataTypes) => {
       allowNull: false,
       primaryKey: true,
     },
-    message: DataTypes.STRING,
+    message: DataTypes.TEXT('long'),
+    type: DataTypes.STRING,
+    videotype: DataTypes.STRING,
     isprivate: DataTypes.TINYINT,
     isactive: DataTypes.TINYINT
   }, { 

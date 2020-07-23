@@ -34,12 +34,14 @@ router.get('/cityinfo/:id',  CountryController.getCityDetail);
 //post Routes
 router.get('/getAllPosts', passport.authenticate('jwt', { session: false }), PostController.getAll);
 router.get('/getAllUserPosts/:user_id', passport.authenticate('jwt', { session: false }), PostController.getUserPosts);
+router.post('/getAllUsersPosts', passport.authenticate('jwt', { session: false }), PostController.getUsersPosts);
 router.get('/getPostById/:id', passport.authenticate('jwt', { session: false }), PostController.getById);
 router.post('/createPost', passport.authenticate('jwt', { session: false }), PostController.create);
 router.put('/updatePost/:id', passport.authenticate('jwt', { session: false }), PostController.update);
 router.delete('/removePost/:id', passport.authenticate('jwt', { session: false }), PostController.remove);
 router.put('/updateIsActive/:id', passport.authenticate('jwt', { session: false }), PostController.updateIsActive);
 router.put('/updateIsPrivate/:id', passport.authenticate('jwt', { session: false }), PostController.updateIsPrivate);
+router.post('/uploadPostImage', PostController.uploadPostImage);
 
 //comment
 router.get('/getPostComments/:post_id', passport.authenticate('jwt', { session: false }), CommentController.getPostComments);

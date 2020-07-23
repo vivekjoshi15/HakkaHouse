@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { trackPromise } from 'react-promise-tracker';
 import { withTranslation, Trans } from 'react-i18next';
 import Moment from 'react-moment';
+import ReactPlayer from 'react-player';
+import ModalImage from "react-modal-image";
 
 import PanelDashboardLeft from '../panel-dashboard-left';
 import { authHeader } from '../../_helpers/auth-header';
@@ -12,7 +14,16 @@ import { userService, postService, likeService, commentService } from '../../_se
 
 import { IoMdThumbsUp, IoIosChatboxes, IoIosShareAlt } from "react-icons/io";
 
+import { FilePond, registerPlugin } from "react-filepond"
+import "filepond/dist/filepond.min.css"
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation"
+import FilePondPluginImagePreview from "filepond-plugin-image-preview"
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+
 import '../dashboard/index.css';
+
+// Register the plugins
+registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 class postsView extends Component {
   constructor(props) {
@@ -21,9 +32,15 @@ class postsView extends Component {
       showModel: false,
       message:'',  
       isOwner:false,
+      videotype: 'YouTube',
+      postType: 'Text',
+      isPhoto: false,
+      isVideo: false,
       id: 0, 
       user_id: 0, 
+      postVideo: '', 
       postMessage: '', 
+      opostMessage: '',
       firstname: '', 
       lastname: '', 
       username: '', 
@@ -31,7 +48,8 @@ class postsView extends Component {
       users:[],
       user: {},
       posts: [],
-      selItem:{}
+      selItem:{},
+      imgCollection: '',
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handlePostModel = this.handlePostModel.bind(this);
@@ -45,6 +63,9 @@ class postsView extends Component {
     this.addComment = this.addComment.bind(this);
     this.handlePostComment=this.handlePostComment.bind(this);
     this.isUserLike=this.isUserLike.bind(this);
+    this.handlePostTypeChange=this.handlePostTypeChange.bind(this);
+    this.handleVideoTypeChange=this.handleVideoTypeChange.bind(this);
+    this.fileChange = this.fileChange.bind(this);
   }
 
   componentDidMount() {
@@ -102,11 +123,10 @@ class postsView extends Component {
       postService.getById(CONSTANTS.GET_POST_ID_URI+'/'+id)
         .then((result) => {     
           if(result != null && result.post != null) {           
-            /*this.setState({
-              posts: this.state.posts.filter(i => i !== index)
-            });*/
-            const newPosts = this.state.posts.splice(this.state.posts.indexOf(id, 0), 1); 
-            this.setState({posts: [ ...newPosts, result.post]}); 
+            //const newPosts = this.state.posts.splice(this.state.posts.indexOf(id, 0), 1);  
+            const newPosts = [ ...this.state.posts.filter(p => p.id !== parseInt(id)), result.post];
+            newPosts.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+            this.setState({ posts: newPosts }); 
           }
           else
           {
@@ -114,6 +134,11 @@ class postsView extends Component {
           }
         })
     );
+  }
+
+  fileChange = (files) => {
+    let items = files.map(fileItem => fileItem.file);
+    this.setState({ imgCollection: items }); 
   }
 
   handleInputChange(event) {
@@ -126,41 +151,168 @@ class postsView extends Component {
     });
   }
 
+  handlePostTypeChange = (event) => {
+    this.setState({ postType: event.target.value });
+
+    if(event.target.value === "Photo"){
+      this.setState({ isPhoto: true });
+      this.setState({ isVideo: false });
+      this.setState({ postMessage: 'image' });
+    }
+    else if(event.target.value === "Video"){
+      this.setState({ isVideo: true });
+      this.setState({ isPhoto: false });
+      this.setState({ postMessage: 'video' });
+    }
+    else{
+      this.setState({ isVideo: false });
+      this.setState({ isPhoto: false });
+      this.setState({ postMessage: this.state.opostMessage });
+    }
+  }
+
+  handleVideoTypeChange = (event) => {
+    this.setState({ videotype: event.target.value });
+
+    if(event.target.value === "YouTube" || event.target.value === "Vimeo" || event.target.value === "DailyMotion" || event.target.value === "Mixcloud" || event.target.value === "Facebook"){
+      this.setState({ isVideo: true });
+      this.setState({ isPhoto: false });
+      this.setState({ postMessage: 'video' });
+    }
+    else{
+      this.setState({ isVideo: false });
+      this.setState({ isPhoto: false });
+      this.setState({ postMessage: this.state.opostMessage });
+    }
+  }
+
   handlePostModel = () => { 
     this.setState({ showModel: !this.state.showModel });    
     this.setState({ id: 0 });
+    this.setState({ isVideo: false });
+    this.setState({ isPhoto: false });
+    this.setState({ postMessage: '' });
+    this.setState({ opostMessage: '' });
+    this.setState({ postType: 'Text'}); 
+    this.setState({ videotype: 'YouTube'}); 
+    this.setState({ postVideo: '' });  
+    this.setState({ imgCollection: '' });
   }
 
   handlePost = (e) => { 
     this.setState({message: ''});
 
-    if (!this.state.postMessage.length) {
-      return;
-    }
+    if(this.state.postMessage !== "" && this.state.postMessage.trim() !== ""){
 
-    if(this.state.id === 0){
+      var formData = new FormData();
 
-      const request={
-        userId: this.state.user_id,
-        message: this.state.postMessage,
-        isprivate: 0,
-        isactive: 1,
+      if(this.state.id === 0){
+
+        if(this.state.isPhoto){
+
+          formData.append('file', this.state.imgCollection[0])
+          formData.append('folder', 'posts');
+          formData.append('id', this.state.user_id);
+
+          fetch(CONSTANTS.UPLOADPOSTIMAGE_URI, {
+              method: 'POST',
+              body: formData,
+              headers: {}
+            })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                  if (result.success === true) {       
+                    this.setState({ postMessage: (result.image !== '' && result.image !== null) ? result.image : '' });
+
+                    this.addPost();
+                  } else {
+                    this.setState({message: result.error});
+                  }
+                },
+                (error) => {
+                  this.setState({message: error});
+                }
+            )    
+            .catch(err => {
+              console.error(err);
+              this.setState({message: 'Error logging in please try again'+ err});
+          })
+        }
+        else{
+          this.addPost();          
+        }
       }
+      else
+      {
+        if(this.state.isPhoto){
+          formData.append('file', this.state.imgCollection[0]);
+          formData.append('folder', 'posts');
+          formData.append('id', this.state.user_id);
 
-      trackPromise(
-        fetch(CONSTANTS.CREATE_POST_URI, {
-          method: 'POST',
-          body: JSON.stringify(request),
-          headers: authHeader()
-        })
-        .then(res => res.json())
-        .then(
-          (result) => {
-            if (result.success === true) {        
-              this.setState({message: 'Your Post Inserted!!!'});
+          fetch(CONSTANTS.UPLOADPOSTIMAGE_URI, {
+              method: 'POST',
+              body: formData,
+              headers: {}
+            })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                  if (result.success === true) {       
+                    this.setState({ postMessage: (result.image !== '' && result.image !== null) ? result.image : '' });
+
+                    this.updatePost();       
+                  } else {
+                    this.setState({message: result.error});
+                  }
+                },
+                (error) => {
+                  this.setState({message: error});
+                }
+            )    
+            .catch(err => {
+              console.error(err);
+              this.setState({message: 'Error logging in please try again'+ err});
+          })
+        }
+        else{
+          this.updatePost();          
+        }
+      }
+    }
+  }
+
+  addPost = (e) =>{
+    const request={
+      userId: this.state.user_id,
+      message: (this.state.isVideo)?this.state.postVideo:this.state.postMessage,
+      isprivate: 0,
+      isactive: 1,
+      type: this.state.postType,
+      videotype: this.state.videotype
+    }
+    
+    fetch(CONSTANTS.CREATE_POST_URI, {
+        method: 'POST',
+        body: JSON.stringify(request),
+        headers: authHeader()
+      })
+      .then(res => res.json())
+      .then(
+        (result) => {
+          if (result.success === true) {        
+              this.setState({ message: 'Your Post Inserted!!!'});
               this.setState({ showModel: !this.state.showModel });
               this.setState({ id: 0 });
-              this.getAllUserPosts(this.state.user_id);  
+              this.setState({ postMessage: '' });
+              this.setState({ opostMessage: '' });
+              this.getAllUserPosts(this.state.user_id);   
+              this.setState({ postType: 'Text'});  
+              this.setState({ videotype: 'YouTube'});   
+              this.setState({ isPhoto: false });
+              this.setState({ isVideo: false });              
+              this.setState({ postVideo: '' });
+              this.setState({ imgCollection: '' });
             } else {
               this.setState({message: result.error});
             }
@@ -172,31 +324,38 @@ class postsView extends Component {
           console.error(err);
           this.setState({message: 'Error logging in please try again'+ err});
         })
-      )
-    }
-    else
-    {
-      const request={
-        message: this.state.postMessage
-      }
+  }
 
-      trackPromise(
-        postService.updatePost(CONSTANTS.UPDATE_POST_URI + '/' + this.state.id, request)
-          .then((result) => {   
-            if (result.success) {        
-                this.setState({message: 'Your Post Updated!!!'});
-                this.setState({ showModel: !this.state.showModel });
-                this.setState({ id: 0 });
-                this.getAllUserPosts(this.state.user_id);  
-              } else {
-                this.setState({message: result.error});
-              }
-          },
-          (error) => {
-              this.setState({message: error});
-          })
-      );
+  updatePost = (e) =>{
+
+    const request={
+      message: (this.state.isVideo)?this.state.postVideo:this.state.postMessage,
+      type: this.state.postType,
+      videotype: this.state.videotype
     }
+       
+    postService.updatePost(CONSTANTS.UPDATE_POST_URI + '/' + this.state.id, request)
+      .then((result) => {   
+        if (result.success) {        
+          this.setState({ message: 'Your Post Updated!!!' });
+          this.setState({ showModel: !this.state.showModel });
+          this.setState({ id: 0 });
+          this.setState({ postMessage: '' });
+          this.setState({ opostMessage: '' });
+          this.getAllUserPosts(this.state.user_id);  
+          this.setState({ postType: 'Text'});  
+          this.setState({ videotype: 'YouTube'});   
+          this.setState({ isPhoto: false });
+          this.setState({ isVideo: false });
+          this.setState({ postVideo: '' });
+          this.setState({ imgCollection: '' });
+        } else {
+          this.setState({message: result.error});
+        }
+      },
+      (error) => {
+        this.setState({message: error});
+      })
   }
 
   editPost = (e) =>{
@@ -206,8 +365,28 @@ class postsView extends Component {
       postService.getById(CONSTANTS.GET_POST_ID_URI + '/' + e.target.id)
         .then((result) => {   
           if(result != null) { 
-            this.setState({postMessage: result.post.message});   
-            this.setState({ showModel: true });     
+            this.setState({ postType: result.post.type});   
+            this.setState({ videotype: result.post.videotype});   
+            this.setState({ postMessage: result.post.message});   
+            this.setState({ opostMessage: result.post.message });
+            this.setState({ postVideo: '' });
+            this.setState({ showModel: true });   
+
+            if(result.post.type === "Photo"){
+              this.setState({ isPhoto: true });
+              this.setState({ isVideo: false });
+              this.setState({ postVideo: '' });
+            }
+            else if(result.post.type === "Video"){
+              this.setState({ isVideo: true });
+              this.setState({ isPhoto: false });
+              this.setState({ postVideo: result.post.message });
+            }
+            else{
+              this.setState({ isVideo: false });
+              this.setState({ isPhoto: false });
+              this.setState({ postVideo: '' });
+            }  
           }
         },
         (error) => {
@@ -217,31 +396,25 @@ class postsView extends Component {
   }
 
   deletePost= param => (e) => {
-    trackPromise(
-      postService.removePost(CONSTANTS.REMOVE_POST_URI + '/' + e.target.id)
-        .then((result) => { 
-          const newPosts = this.state.posts.splice(param, 1); //this.state.posts.indexOf(e.target.id)
-          this.setState({posts: newPosts}); 
-          //this.getAllUserPosts(result.user.user_id);  
-        },
-        (error) => {
-            this.setState({message: error});
-        })
-    );
+    const id = e.target.id;
+    postService.removePost(CONSTANTS.REMOVE_POST_URI + '/' + id)
+      .then((result) => { 
+        this.setState({ posts: this.state.posts.filter(p => p.id !== parseInt(id)) });
+      },
+      (error) => {
+        this.setState({message: error});
+      })
   }
 
   hidePost = param => (e) =>{
     const request={
       isactive: 0,
-    }
-
-    trackPromise(
-      postService.updateIsPrivate(CONSTANTS.UPDATE_ISACTIVE_URI + "/" + e.target.id, request)
+    }   
+    const id = e.target.id;
+    postService.updateIsPrivate(CONSTANTS.UPDATE_ISACTIVE_URI + "/" + id, request)
       .then((result) => {
-        if (result.success === true) {        
-          //const newPosts = this.state.posts.splice(param, 1);
-          //this.setState({posts: newPosts});
-          this.getAllUserPosts(this.state.user_id);  
+        if (result.success === true) {    
+          this.getPost(id);     
         } else {
           this.setState({message: result.error});
         }
@@ -249,20 +422,17 @@ class postsView extends Component {
       (error) => {
           this.setState({message: error});
       })
-    );
   }
 
   privatePost= param => (e) => {
     const request={
       isprivate: (param === 0)?1:0,
     }
-
-    trackPromise(
-      postService.updateIsPrivate(CONSTANTS.UPDATE_ISPRIVATE_URI + "/" + e.target.id, request)
+    const id = e.target.id;
+    postService.updateIsPrivate(CONSTANTS.UPDATE_ISPRIVATE_URI + "/" + id, request)
       .then((result) => {
         if (result.success === true) {   
-          this.getPost(e.target.id);           
-          //this.getAllUserPosts(this.state.user_id);  
+          this.getPost(id);           
         } else {
           this.setState({message: result.error});
         }
@@ -270,7 +440,6 @@ class postsView extends Component {
       (error) => {
         this.setState({message: error});
       })
-    );   
   }
 
   likePost = id => (e) =>{
@@ -278,12 +447,11 @@ class postsView extends Component {
       userId: this.state.user_id,
       postId: id
     }
-    trackPromise(
-      likeService.createLike(CONSTANTS.CREATE_LIKE_URI, request)
+   
+    likeService.createLike(CONSTANTS.CREATE_LIKE_URI, request)
       .then((result) => {
         if (result.success === true) {  
           this.getPost(id);     
-          //this.getAllUserPosts(this.state.user_id);  
         } else {
           this.setState({message: result.error});
         }
@@ -291,7 +459,6 @@ class postsView extends Component {
       (error) => {
           this.setState({message: error});
       })
-    );
   }
 
   isUserLike = (item) =>{
@@ -318,27 +485,27 @@ class postsView extends Component {
 
   addComment = item => (e) =>{
 
-    const request={
-      userId: this.state.user_id,
-      postId: item.id,
-      message: item.postComment
-    }
+    if(item.postComment !== "" && item.postComment.trim() !== ""){
+      const request={
+        userId: this.state.user_id,
+        postId: item.id,
+        message: item.postComment
+      }
 
-    trackPromise(
       commentService.createComment(CONSTANTS.CREATE_COMMENT_URI, request)
-      .then((result) => {
-        if (result.success === true) {   
-          item.showComment = !item.showComment;
-          this.setState({selItem:item}); 
-          this.getPost(item.id);  
-        } else {
-          this.setState({message: result.error});
-        }
-      },
-      (error) => {
-          this.setState({message: error});
-      })
-    );
+        .then((result) => {
+          if (result.success === true) {   
+            //item.showComment = !item.showComment;
+            //this.setState({selItem:item}); 
+            this.getPost(item.id);  
+          } else {
+            this.setState({message: result.error});
+          }
+        },
+        (error) => {
+            this.setState({message: error});
+        })
+    }
   }
 
   render() {
@@ -351,18 +518,18 @@ class postsView extends Component {
             </PanelDashboardLeft>
             <div class="col-7 panelDashboard2 block"> 
                 <div class="row">
-                  <div class="col-2">
+                  <div class="col-2">       
                     {this.state.isOwner?  
-                      <div id="createPost" onClick={this.handlePostModel}>Create Post</div>
-                    :""}       
+                      <div></div>
+                    :""}   
                   </div>
                   <div class="col">
                     <h1><Trans i18nKey='profile:view.posts'>Posts</Trans></h1>
                   </div>
                   <div class="col-2">
                     {this.state.isOwner?  
-                      <div></div>
-                    :""}       
+                      <div id="createPost" onClick={this.handlePostModel}>Create Post</div>
+                    :""}    
                   </div>
                 </div>        
              <div class="row">
@@ -407,7 +574,30 @@ class postsView extends Component {
                              </div>
                             {(item.isprivate===1)?<div class="private" title="This post is private and will not be publicly visible">Private</div>:""} 
                           </div>
-                          <div class="postMessage">{item.message}</div>
+                          <div class="postMessage">
+                            {(item.type==="Text")?
+                              item.message:
+                              ((item.type==="Video")?
+                                <ReactPlayer  
+                                  url={item.message} 
+                                  width="600px"
+                                  height="300px"
+                                  playing="false"
+                                  controls="true"
+                                  volume="0"
+                                  muted
+                                  style={{margin: '0 auto'}}
+                                />:
+                                <ModalImage
+                                  small={item.message}
+                                  large={item.message}
+                                  className="postImage"
+                                  alt="click to view large image"
+                                  hideDownload="true"
+                                  showRotate="true"
+                                />)
+                              }
+                          </div>
                           <div class="row postFeatures">               
                             <div class="col-4">
                               {this.isUserLike(item)?
@@ -437,10 +627,18 @@ class postsView extends Component {
                                 {item.comments && item.comments.map((comment, ind) => {
                                   return(
                                   <li key={index+ ' ' +ind}>
-                                    <Moment fromNow>
-                                      {comment.createdAt}
-                                    </Moment><br/>
-                                    {comment.message}
+                                    <div class="date">
+                                       <div class="logoImg">
+                                        { <Link to={'/'+comment.user.username}>{(comment.user.profileimage !=='' && comment.user.profileimage !== undefined && comment.user.profileimage !== null)?<img src={comment.user.profileimage} alt="" border="0" />:<img src="./blank-profile.jpg" alt="" border="0" />}</Link> }
+                                       </div>
+                                       <div class="usrName">
+                                        <Link to={'/'+comment.user.username}>{comment.user.fullname}</Link>
+                                        <Moment fromNow>
+                                          {comment.createdAt}
+                                        </Moment>
+                                       </div>
+                                    </div>
+                                    <div class="commentMessage">{comment.message}</div>
                                   </li>
                                 );})}
                               </ul>
@@ -482,8 +680,53 @@ class postsView extends Component {
                   </div>       
                 </div>                       
                 <div class="row">
-                  <div class="col"> 
-                    <textarea id="postMessage" name="postMessage" class="txtPost" required onChange={this.handleInputChange}>{this.state.postMessage}</textarea>                   
+                  { this.state.isPhoto?
+                    <div class="col pnlPhoto"> 
+                      <FilePond 
+                        files={this.state.imgCollection}
+                        allowMultiple={false}
+                        maxFiles={1} 
+                        server={null}
+                        instantUpload={false}
+                        onupdatefiles={(fileItems) => this.fileChange(fileItems)}>
+                      </FilePond>
+                      <img class="postImage pimage" src={this.state.postMessage} alt="" />
+                    </div>
+                    : 
+                  (this.state.isVideo?
+                    <div class="col pnlVideo"> 
+                      <input type="text" id="postVideo" name="postVideo" value={this.state.postVideo} placeholder="Enter url" onChange={this.handleInputChange} />
+                      <div class="videoOption">
+                        <div class="videoTypes">
+                          <div>Select Video Type</div>
+                          <div><input type="radio" name="" value="YouTube" checked={this.state.videotype === 'YouTube'} onChange={this.handleVideoTypeChange} />YouTube</div>
+                          <div><input type="radio" name="" value="Vimeo" checked={this.state.videotype === 'Vimeo'} onChange={this.handleVideoTypeChange}  />Vimeo</div>
+                          <div><input type="radio" name="" value="Facebook" checked={this.state.videotype === 'Facebook'} onChange={this.handleVideoTypeChange}  />Facebook</div>
+                          <div><input type="radio" name="" value="DailyMotion" checked={this.state.videotype === 'DailyMotion'} onChange={this.handleVideoTypeChange}  />DailyMotion</div>
+                          <div><input type="radio" name="" value="Mixcloud" checked={this.state.videotype === 'Mixcloud'} onChange={this.handleVideoTypeChange}  />Mixcloud</div>
+                        </div>
+                        <div class="postVideoPreview">
+                          <ReactPlayer  
+                            url={this.state.postVideo} 
+                            width="400px"
+                            height="238px"
+                            playing="true"
+                            style={{margin: '0 auto'}}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    :
+                    <div class="col"> 
+                      <textarea id="postMessage" name="postMessage" class="txtPost" placeholder="Enter text here...." required onChange={this.handleInputChange}>{this.state.postMessage}</textarea>                   
+                    </div>)
+                }
+                </div>                        
+                <div class="row">
+                  <div class="col postType"> 
+                    <input type="radio" name="" value="Text" checked={this.state.postType === 'Text'} onChange={this.handlePostTypeChange} />Text
+                    <input type="radio" name="" value="Photo" checked={this.state.postType === 'Photo'} onChange={this.handlePostTypeChange}  />Photo
+                    <input type="radio" name="" value="Video" checked={this.state.postType === 'Video'} onChange={this.handlePostTypeChange}  />Video
                   </div>
                 </div>                     
                 <div class="row">

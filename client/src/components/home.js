@@ -5,7 +5,7 @@ import { withTranslation, Trans } from 'react-i18next';
 class home extends Component {
 
   componentDidMount() {
-    this.props.setBannerText('Hakka.House');
+    //this.props.setBannerText('Hakka.House');
   }
 
   render() {

@@ -130,6 +130,15 @@ ul#memberList li a h4{
     margin-left: 5px;
 }
 
+ul#memberList li:hover{
+  background-color: hsla(0,0%,67.8%,.15);
+  border-radius: 5px;
+}
+
+ul#memberList li:hover a img {    
+  border: 1px solid #b90900;
+}
+
 #contentDashboard img.profileimage {
     width: 100%;
     border: 1px solid #ccc;
@@ -183,7 +192,7 @@ ul#memberList li a h4{
   font-size: 18px;
   padding-bottom: 2px;
   margin: 11px 0 8px;
-  text-transform: capitalize;
+  text-transform: uppercase;
 }
 
 ul#postList{
@@ -322,6 +331,17 @@ ul#postList .postMenu ul li div:hover{
   border-bottom: solid 1px #ccc;
 }
 
+.postImage{
+  display:block;
+  max-height: 300px!important;
+  max-width: 80%!important;
+  margin:0px auto;
+}
+
+.postImage.pimage{
+  max-height: 200px!important;
+}
+
 .postFeatures{  
   margin-top: 2px;
   height: 30px;
@@ -413,20 +433,37 @@ ul#postList ul.comments {
   display: block;
   margin: 0px;
   padding: 0px;
-  border-bottom: 1px solid #b90900;
 }
 
 ul#postList ul.comments li {
   display: block;
   box-shadow: none;
-  margin: 0px;
-  padding: 7px 15px;
-  border-top: 1px solid #b90900;
+  margin: 2px 0px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 12px;
 }
 
 ul#postList ul.comments li time{
   font-size: 10px;
   font-style: italic;
+}
+
+ul#postList li ul.comments li .date{
+  margin: 0 0 1px;
+}
+
+ul#postList li ul.comments li .date .usrName{
+  font-size: 12px;
+}
+
+ul#postList li ul.comments li .date .logoImg img{
+  height: 25px;
+  width: 25px;
+}
+
+ul#postList li ul.comments li .commentMessage{
+  margin-left:33px;
 }
 
 .alignCenter{
@@ -451,4 +488,38 @@ ul#postList ul.comments li time{
   cursor: pointer;
   background-color: #666;
   box-shadow: 0 1px 6px 0 rgba(32,33,36,.48);
+}
+
+.modelPost .pnlVideo,
+.modelPost .pnlPhoto{
+  height: 276px;
+  overflow: hidden;
+}
+
+.modelPost .pnlVideo input[type=text]#postVideo{
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  border: 1px solid #999;
+  margin-bottom: 5px;
+}
+
+.modelPost .pnlVideo .videoOption{
+  display: flex;
+  flex-direction: row;
+}
+
+.modelPost .pnlVideo .videoOption .videoTypes{
+  display: flex;
+  flex-direction: column;
+  max-width: 120px;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 30px;
+}
+
+.modelPost .pnlVideo .postVideoPreview{
+  display: flex;
+  width: calc( 100% - 120px);
+  margin-top: 0;
 }

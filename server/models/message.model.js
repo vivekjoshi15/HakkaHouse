@@ -12,7 +12,7 @@ module.exports = (sequelize, dataTypes) => {
     },
     isactive: DataTypes.TINYINT,
     isread: DataTypes.TINYINT,
-    message: DataTypes.STRING,
+    message: DataTypes.TEXT('long'),
     readdate: DataTypes.DATE
   }, { 
     underscored: true,

@@ -711,7 +711,7 @@ button, input, optgroup, select, textarea {
     vertical-align: middle;
     display: table;
     background-color: #000;
-    opacity: .5;
+    opacity: .1;
 }
 
 .topBanner span {

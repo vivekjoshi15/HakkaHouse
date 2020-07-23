@@ -29,12 +29,14 @@ export default {
 
     GET_POSTS_URI: '/v1/getAllPosts',
     GET_POSTS_USERS_URI: '/v1/getAllUserPosts',
+    GET_USERS_POSTS_URI: '/v1/getAllUsersPosts',
     GET_POST_ID_URI: '/v1/getPostById',
     CREATE_POST_URI: '/v1/createPost',
     UPDATE_POST_URI: '/v1/updatePost',
     REMOVE_POST_URI: '/v1/removePost',
     UPDATE_ISACTIVE_URI: '/v1/updateIsActive',
     UPDATE_ISPRIVATE_URI: '/v1/updateIsPrivate',
+    UPLOADPOSTIMAGE_URI: '/v1/uploadPostImage',
 
     GET_POST_LIKES_URI: '/v1/getPostLikes',
     GET_LIKE_ID_URI: '/v1/getLikeById',

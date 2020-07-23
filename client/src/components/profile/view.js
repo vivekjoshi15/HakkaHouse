@@ -17,7 +17,7 @@ class profileView extends Component {
       isOwner:false,
       id: 0, 
       user_id: 0, 
-      roleId: 1, 
+      roleId: 2, 
       message:'', 
       firstname: '', 
       lastname: '', 

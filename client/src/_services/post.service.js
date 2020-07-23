@@ -4,6 +4,8 @@ const getAllPosts = (url) => fetchWithDelay(url);
 
 const getAllUserPosts = (url) => fetchWithDelay(url);
 
+const getAllUsersPosts = (url, data) => fetchPostWithDelay(url, data);
+
 const getById = (url) => fetchWithDelay(url);
 
 const createPost = (url, data) => fetchPostWithDelay(url, data);
